@@ -45,7 +45,7 @@ Evaluation took:
  |#
 
 ;; Return t iff every leaf of the Maxima expression is either a number
-;; a builtin numeric constant (for exmaple %pi or %e) or %i.
+;; a builtin numeric constant (for example %pi or %e) or %i.
 (defun my-constantp (e)
   (if ($mapatom e)
       (or (mnump e)
@@ -70,23 +70,23 @@ Evaluation took:
         (base-y (if (mexptp y) (second y) y))
         (exp-y (if (mexptp y) (third y) 1)))
     (cond
-      ;; Bases are alike, compare exponents
+      ;; Bases are alike; compare exponents
       ((alike1 base-x base-y)
        (great exp-x exp-y))
-      ;; great(integer^XX, mapatom) = t (needed rtest_rules.mac problems 207 & 208)
-      ;; I'm not 100% sure that this is OK. Notice that x cannot be a mapatom.
+      ;; If base of x is an integer and y is atomic, return true
+      ;; This case is needed rtest_rules.mac problems 207 & 208)
       ((and (integerp base-x) ($mapatom y)) t)
       (t
        (let ((x-const (my-constantp x))
              (y-const (my-constantp y)))
          (cond
-           ;; great(non-constant, constant) = t (needed for rtest_limit 71 & 73)
+           ;; non-constant x is greater than constant y (needed for rtest_limit 71 & 73)
            ((and (not x-const) y-const) t)
-           ;; great(constant, non-constant) = nil
+           ;; constant x is not greater than non-constant y
            ((and (not y-const) x-const) nil)
-           ;; Special case for base %e (needed for rtestode 86, rtest_limit_extra 116
+           ;; special case for base %e (needed for rtestode 86, rtest_limit_extra 116
            ;; and maybe more--without these cases, about 130 testsuite failures)
            ((eq base-x '$%e) t)
            ((eq base-y '$%e) nil)
-           ;; Compare the bases if none of the above cases match
+           ;; default: comparison between bases
            (t (great base-x base-y))))))))

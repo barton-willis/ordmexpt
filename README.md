@@ -16,7 +16,7 @@ The last I tried, my alternative `ordmexpt` function runs the testsuite
 with forty-nine unexpected failures and one asksign. Of these failures, the alternative `approx-alike` determines that twenty of these failures are syntactic. Of the remaining twenty-nine failures, many are syntactic. 
 
 Running the testsuite calls `ordmexpt` about two million times, so we need to be
-concerned with its efficiency. In addition to fixing bug #4383, the modified `ordmexpt` function fixes two other bugs; one of these is 
+concerned with its efficiency. In addition to fixing bug #4383, the modified `ordmexpt` function fixes two testsuite failures; one of these is 
 ~~~
 Running tests in rtest_limit_extra:
 ********************** Problem 259 (line 909) ***************
@@ -32,6 +32,7 @@ ind
 
 ... Which was correct, but was expected to be wrong due to a known bug in Maxima or SBCL.
 ~~~
+This bug fix is *not* related to the extra simplifications in `approx-alike`.
 
 
 
