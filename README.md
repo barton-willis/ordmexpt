@@ -17,8 +17,25 @@ with 54 unexpected failures. Of these failures, the alternative `approx-alike`
 determines that twenty of these failures are syntactic. Of the remaining
 34 failures, many are syntactic. 
 
-Running the testsuite calls `ordmexpt` about two million times.
+Running the testsuite calls `ordmexpt` about two million times. In addition to
+fixing bug #4383, the modified `ordmexpt` function fixes two other bugs; one
+of these is 
+~~~
+Running tests in rtest_limit_extra:
+********************** Problem 259 (line 909) ***************
+Input:
+                 - a
+                 ───
+              a   2
+limit((%i + 1)  2   , a, inf)
 
+
+Result:
+ind
+
+... Which was correct, but was expected to be wrong due to a known bug in
+ Maxima or SBCL.
+~~~
 
 
 
