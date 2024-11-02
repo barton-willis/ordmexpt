@@ -14,8 +14,10 @@ intended as a replacement to `approx-alike`.
 
 The last I tried, my alternative `ordmexpt` function runs the testsuite 
 with 54 unexpected failures. Of these failures, the alternative `approx-alike` 
-determines that twenty of these failures are syntactic. Of the remaining, 
-34 failures, many are syntactic.
+determines that twenty of these failures are syntactic. Of the remaining
+34 failures, many are syntactic. 
+
+Running the testsuite calls `ordmexpt` about two million times.
 
 
 
