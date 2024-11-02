@@ -69,7 +69,8 @@ Evaluation took:
       ((alike1 base-x base-y)
        (great exp-x exp-y))
       ;; great(exponential, mapatom) = t (needed rtest_rules.mac problems 207 & 208)
-      (($mapatom y) t)
+      ;; But I think this rule is wrong!
+      ;(($mapatom y) t)
       (t
        (let ((x-const (my-constantp x))
              (y-const (my-constantp y)))
