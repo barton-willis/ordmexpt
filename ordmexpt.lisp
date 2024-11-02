@@ -12,6 +12,8 @@ Error(s) found:
      537 538)
   C:/Users/barto/maxima-code/tests/rtest_trace.mac problems:
     (87 88)
+  C:/Users/barto/maxima-code/share/to_poly_solve/rtest_to_poly_solve.mac problems:
+    (166 216)
 Tests that were expected to fail but passed:
   C:/Users/barto/maxima-code/tests/rtest1.mac problem:
     (183)
@@ -21,30 +23,35 @@ Tests that were expected to fail but passed:
     (259)
   C:/Users/barto/maxima-code/tests/rtest_hg.mac problem:
     (87)
-29 tests failed out of 13,954 total tests.
+  C:/Users/barto/maxima-code/share/numeric/rtest_romberg.mac problem:
+    (18)
+  C:/Users/barto/maxima-code/share/to_poly_solve/rtest_to_poly_solve.mac problem:
+    (322)
+  C:/Users/barto/maxima-code/share/raddenest/rtest_raddenest.mac problem:
+    (123)
+31 tests failed out of 18,817 total tests.
 Evaluation took:
-  138.837 seconds of real time
-  103.375000 seconds of total run time (71.906250 user, 31.468750 system)
-  [ Real times consist of 3.573 seconds GC time, and 135.264 seconds non-GC time. ]
-  [ Run times consist of 3.703 seconds GC time, and 99.672 seconds non-GC time. ]
-  74.46% CPU
-  9,642 forms interpreted
-  12,126 lambdas converted
-  277,145,709,445 processor cycles
-  44,125,950,928 bytes consed
+  705.770 seconds of real time
+  403.109375 seconds of total run time (264.562500 user, 138.546875 system)
+  [ Real times consist of 13.359 seconds GC time, and 692.411 seconds non-GC time. ]
+  [ Run times consist of 13.203 seconds GC time, and 389.907 seconds non-GC time. ]
+  57.12% CPU
+  347,839 forms interpreted
+  347,941 lambdas converted
+  1,408,853,402,540 processor cycles
+  120,653,951,936 bytes consed
 
-  calls to ordmexpt: 2,040,096
+  calls to ordmexpt: 6,435,472
  |#
 
 ;; Return t iff every leaf of the Maxima expression is either a number
 ;; a builtin numeric constant (for exmaple %pi or %e) or %i.
 (defun my-constantp (e)
-  (cond (($mapatom e)
-           (or (mnump e)
-               (eq e '$%i)
-               (member e *builtin-numeric-constants* :test #'eq)))
-        (t (every #'my-constantp (margs e)))))
-
+  (if ($mapatom e)
+      (or (mnump e)
+          (eq e '$%i)
+          (member e *builtin-numeric-constants* :test #'eq))
+      (every #'my-constantp (margs e))))
 ;; Return great(x,y), where x is an mexpt expression and y is any Maxima
 ;; expression.
 
