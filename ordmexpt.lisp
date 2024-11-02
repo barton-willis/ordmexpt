@@ -42,7 +42,7 @@ Evaluation took:
   (cond (($mapatom e)
            (or (mnump e)
                (eq e '$%i)
-               (member e *builtin-numeric-constants*)))
+               (member e *builtin-numeric-constants* :test #'eq)))
         (t (every #'my-constantp (margs e)))))
 
 ;; Return great(x,y), where x is an mexpt expression and y is any Maxima
