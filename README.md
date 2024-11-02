@@ -33,8 +33,7 @@ limit((%i + 1)  2   , a, inf)
 Result:
 ind
 
-... Which was correct, but was expected to be wrong due to a known bug in
- Maxima or SBCL.
+... Which was correct, but was expected to be wrong due to a known bug in Maxima or SBCL.
 ~~~
 
 
