@@ -12,8 +12,6 @@ Error(s) found:
      537 538)
   C:/Users/barto/maxima-code/tests/rtest_trace.mac problems:
     (87 88)
-  C:/Users/barto/maxima-code/tests/rtest_unicode_display.mac problems:
-    (77 90 91 92 93)
 Tests that were expected to fail but passed:
   C:/Users/barto/maxima-code/tests/rtest1.mac problem:
     (183)
@@ -23,19 +21,19 @@ Tests that were expected to fail but passed:
     (259)
   C:/Users/barto/maxima-code/tests/rtest_hg.mac problem:
     (87)
-34 tests failed out of 13,954 total tests.
+29 tests failed out of 13,954 total tests.
 Evaluation took:
-  273.612 seconds of real time
-  233.296875 seconds of total run time (159.671875 user, 73.625000 system)
-  [ Real times consist of 6.971 seconds GC time, and 266.641 seconds non-GC time. ]
-  [ Run times consist of 6.640 seconds GC time, and 226.657 seconds non-GC time. ]
-  85.27% CPU
+  138.837 seconds of real time
+  103.375000 seconds of total run time (71.906250 user, 31.468750 system)
+  [ Real times consist of 3.573 seconds GC time, and 135.264 seconds non-GC time. ]
+  [ Run times consist of 3.703 seconds GC time, and 99.672 seconds non-GC time. ]
+  74.46% CPU
   9,642 forms interpreted
-  12,130 lambdas converted
-  546,183,137,950 processor cycles
-  44,154,900,736 bytes consed
+  12,126 lambdas converted
+  277,145,709,445 processor cycles
+  44,125,950,928 bytes consed
 
-  Calls to ordmextp 2,040,189.
+  calls to ordmexpt: 2,040,096
  |#
 
 ;; Return t iff every leaf of the Maxima expression is either a number
@@ -68,9 +66,9 @@ Evaluation took:
       ;; Bases are alike, compare exponents
       ((alike1 base-x base-y)
        (great exp-x exp-y))
-      ;; great(exponential, mapatom) = t (needed rtest_rules.mac problems 207 & 208)
-      ;; But I think this rule is wrong!
-      ;(($mapatom y) t)
+      ;; great(integer^XX, mapatom) = t (needed rtest_rules.mac problems 207 & 208)
+      ;; I'm not 100% sure that this is OK. Notice that x cannot be a mapatom.
+      ((and (integerp base-x) ($mapatom y)) t)
       (t
        (let ((x-const (my-constantp x))
              (y-const (my-constantp y)))
