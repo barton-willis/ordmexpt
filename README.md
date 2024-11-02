@@ -4,7 +4,12 @@ This project aims to develop a new version of the Maxima function `ordmexpt`,
 that is a subroutine for Maxima's ordering predicate `great`. This 
 rewrite attempts clarify the logic of the function and to repair [bug #4383: 
 great not transitive (so simplifya not idempotent)](https://sourceforge.net/p/maxima/bugs/4383/).
-
+Specifically, bug #4383 causes the following expression to not simplify correctly
+~~~
+(%i1)	(declare(z,complex), domain : complex)$
+(%i2)	exp(z) + sqrt(exp(z)) + exp(z);
+(%o2)	%e^z+sqrt(%e^z)+%e^z
+~~~
 Maxima's ordering predicate `great` is closely linked to simplification, 
 so tweaking `great` can cause syntactic testsuite failures. To help 
 distinguish syntactic from semantic failures, this project includes a 
