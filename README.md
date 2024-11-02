@@ -1,7 +1,7 @@
 ## Maxima function `ordmexpt`
 
 This project aims to develop a new version of the Maxima function `ordmexpt`, 
-which serves as a subroutine for Maxima's ordering predicate `great`. This 
+that serves as a subroutine for Maxima's ordering predicate `great`. This 
 rewrite attempts clarify the logic of the function and to repair [bug #4383: 
 great not transitive (so simplifya not idempotent)](https://sourceforge.net/p/maxima/bugs/4383/).
 
