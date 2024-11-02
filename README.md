@@ -13,11 +13,10 @@ to both the expected and actual outputs. This modified function is *not*
 intended as a replacement to `approx-alike`. 
 
 The last I tried, my alternative `ordmexpt` function runs the testsuite 
-with 54 unexpected failures and one asksign. Of these failures, the alternative `approx-alike` determines that twenty of these failures are syntactic. Of the remaining 34 failures, many are syntactic. 
+with fifty-one unexpected failures and one asksign. Of these failures, the alternative `approx-alike` determines that twenty of these failures are syntactic. Of the remaining thirty-one failures, many are syntactic. 
 
-Running the testsuite calls `ordmexpt` about two million times. In addition to
-fixing bug #4383, the modified `ordmexpt` function fixes two other bugs; one
-of these is 
+Running the testsuite calls `ordmexpt` about two million times, so we need to be
+concerned with its efficienct. In addition to fixing bug #4383, the modified `ordmexpt` function fixes two other bugs; one of these is 
 ~~~
 Running tests in rtest_limit_extra:
 ********************** Problem 259 (line 909) ***************
