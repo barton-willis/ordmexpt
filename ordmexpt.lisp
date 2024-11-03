@@ -45,8 +45,8 @@ Evaluation took:
  |#
 
 (defun my-constantp (e &optional (constants *builtin-numeric-constants*))
- "Return t if every leaf of Maxima expression `e` is either a number, %i, or 
- in `constants`."
+ "Return t if every leaf of Maxima expression `e` is either a number, 
+  the imaginary unit %i, or in `constants`."
   (if ($mapatom e)
       (or (mnump e)
           (eq e '$%i)
@@ -58,6 +58,9 @@ Evaluation took:
 (defvar *debug-ordmexpt* nil)
 (defvar *calls-to-ordmexpt* 0)
 (defun ordmexpt (x y)
+  "Subroutine to function 'great'. Requires `x` to be in `mexpt` form; `y` may 
+  or may not be an `mexpt` expression."
+  
     (incf *calls-to-ordmexpt* 1)
     (when *debug-ordmexpt*   
       (let ((*standard-output* *debug-io*)) 
