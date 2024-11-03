@@ -44,13 +44,13 @@ Evaluation took:
   calls to ordmexpt: 6,435,472
  |#
 
-;; Return t iff every leaf of the Maxima expression is either a number
-;; a builtin numeric constant (for example %pi or %e) or %i.
-(defun my-constantp (e)
+(defun my-constantp (e &optional (constants *builtin-numeric-constants*))
+ "Return t if every leaf of Maxima expression `e` is either a number, %i, or 
+ in `constants`."
   (if ($mapatom e)
       (or (mnump e)
           (eq e '$%i)
-          (member e *builtin-numeric-constants* :test #'eq))
+          (member e constants :test #'eq))
       (every #'my-constantp (margs e))))
 ;; Return great(x,y), where x is an mexpt expression and y is any Maxima
 ;; expression.
