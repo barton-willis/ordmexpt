@@ -57,14 +57,15 @@ Evaluation took:
 ;; expression.
 (defvar *debug-ordmexpt* nil)
 (defvar *calls-to-ordmexpt* 0)
+(defvar *bad* nil)
 (defun ordmexpt (x y)
   "Subroutine to function 'great'. Requires `x` to be in `mexpt` form; `y` may 
   or may not be an `mexpt` expression."
 
     (incf *calls-to-ordmexpt* 1)
-    (when *debug-ordmexpt*   
-      (let ((*standard-output* *debug-io*)) 
-         (mtell "x = ~M ; y = ~M ~%" x y)))
+   ; (when *debug-ordmexpt*   
+    ;  (let ((*standard-output* *debug-io*)) 
+    ;     (mtell "x = ~M ; y = ~M ~%" x y)))
 
   ;; Decompose both x & y as x = base-x^exp-x & y = base-y^exp-y. The input x is 
   ;; required to be an mexpt expression, but y need not be an mexpt expression.
@@ -78,18 +79,21 @@ Evaluation took:
        (great exp-x exp-y))
       ;; If base of x is an integer and y is atomic, return true
       ;; This case is needed rtest_rules.mac problems 207 & 208)
-      ((and (integerp base-x) ($mapatom y)) t)
+      ;((and (integerp base-x) ($mapatom y)) t)
       (t
        (let ((x-const (my-constantp x))
              (y-const (my-constantp y)))
          (cond
            ;; non-constant x is greater than constant y (needed for rtest_limit 71 & 73)
-           ((and (not x-const) y-const) t)
+           ;((and (not x-const) y-const) t)
            ;; constant x is not greater than non-constant y
-           ((and (not y-const) x-const) nil)
+           ;((and (not y-const) x-const) nil)
            ;; special case for base %e (needed for rtestode 86, rtest_limit_extra 116
-           ;; and maybe more--without these cases, about 130 testsuite failures)
-           ((eq base-x '$%e) t)
-           ((eq base-y '$%e) nil)
+           ;; and maybe more--without these cases, about 130 testsuite failures). 
+           ;; But this case is responsible for the bug integrate(exp(acsc(z)),z)
+           ;; when domain is complex and z is declared complex.
+           ;((eq base-x '$%e) t)
+           ;((eq base-y '$%e) nil)
+
            ;; default: comparison between bases
            (t (great base-x base-y))))))))

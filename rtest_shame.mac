@@ -1,0 +1,24 @@
+
+(load("simp.lisp"),0);
+0$
+
+ode2(y * 'diff(y,x,2) = a,y,x);
+[(sqrt(%pi)*%i*%e^-%k1*erf((%i*sqrt(a*log(y)+%k1*a))/sqrt(a)))
+        /(sqrt(2)*sqrt(a))
+         = x+%k2,
+       -((sqrt(%pi)*%i*%e^-%k1*erf((%i*sqrt(a*log(y)+%k1*a))/sqrt(a)))
+        /(sqrt(2)*sqrt(a)))
+         = x+%k2]$
+         
+integrate(exp(2*%i*x)/(3+exp(%i*x)),x,0,2*%pi);
+0$
+
+limit((1+sqrt(1+n))^(-n-1)/(1+sqrt(n))^-n,n,inf);
+0$
+
+laplace(exp(2*t +a) * sin(t),t,s);
+%e^a/(s^2-4*s+5)$
+
+(assume(s > 0), integrate(exp(-s*t) * t^(1/3)*log(t),t,0,inf));
+(gamma(1/3)*(-((3*log(3))/2)-%pi/(2*sqrt(3))-%gamma+3))/(3*s^(4/3))
+ -(gamma(1/3)*log(s))/(3*s^(4/3))$
