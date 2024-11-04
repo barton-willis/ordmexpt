@@ -1,7 +1,4 @@
 
-(load("simp.lisp"),0);
-0$
-
 ode2(y * 'diff(y,x,2) = a,y,x);
 [(sqrt(%pi)*%i*%e^-%k1*erf((%i*sqrt(a*log(y)+%k1*a))/sqrt(a)))
         /(sqrt(2)*sqrt(a))
