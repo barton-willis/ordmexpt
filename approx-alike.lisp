@@ -7,9 +7,11 @@
 ;; it might mean that Maxima is incorrectly returing an unsimplified result.
 (defun approx-alike (f g)
     (or (approx-alike-h f g)
-        (approx-alike-h (resimplify f) (resimplify g))
+        (let ((*old* t)) (approx-alike-h (resimplify f) (resimplify g)))
+		(let ((*old* nil)) (approx-alike-h (resimplify f) (resimplify g)))
         (let (($keepfloat t)) 
-               (approx-alike-h (sratsimp (resimplify f)) (sratsimp (resimplify g))))))
+               (approx-alike-h (sratsimp (resimplify f)) 
+			                   (sratsimp (resimplify g))))))
 
 (defun approx-alike-h (f g)
   
