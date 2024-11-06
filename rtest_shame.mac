@@ -29,7 +29,7 @@ laplace(exp(2*t +a) * sin(t),t,s);
   integrate(sqrt(1 - cos(t)), t, 0, 2*%pi);
   2^(5/2)$
 
-integrate(exp(acsc(x)),x);
+block([domain : complex], integrate(exp(acsc(x)),x));
 integrate(exp(acsc(x)),x)$
 
 limit(exp(exp(exp(x)/(1 - 1/x))) - exp(exp(exp(x)/(1 - 1/x - log(x)^(-log(x))))), x, inf);
