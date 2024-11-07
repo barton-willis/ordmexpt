@@ -2,7 +2,7 @@
 
 This project aims to develop a new version of the Maxima function `ordmexpt`, 
 which is a subroutine for Maxima's ordering predicate `great`. This 
-rewrite attempts clarify the logic of the function and to fix [bug #4383: 
+rewrite attempts to clarify the logic of the function and to fix [bug #4383: 
 great not transitive (so simplifya not idempotent)](https://sourceforge.net/p/maxima/bugs/4383/). Specifically, bug #4383 causes the following expression to not simplify correctly
 ~~~
 (%i1)	(declare(z,complex), domain : complex)$
@@ -16,9 +16,35 @@ modified function `approx-alike` that applies several transformations
 to both the expected and actual outputs. This modified function is *not* 
 intended as a replacement to `approx-alike`. 
 
-The last I tried, my alternative `ordmexpt` function runs the testsuite 
-with forty-nine unexpected failures and one asksign. Of these failures, the alternative `approx-alike` determines that twenty of these failures are syntactic. Of the remaining twenty-nine failures, many are syntactic. Also, using the modified
-`approx-alike` it runs both the testsuite and the share testsuite with thirty-one failures and seven tests that are expected to fail, but pass. 
+The last I tried, my alternative `ordmexpt` function runs the testsuite, including
+the share testsuite, with fifty-five unexpected failures. Of these failures, the alternative `approx-alike` determines that twenty-six of these failures are syntactic. Of the remaining twenty-nine failures, many are syntactic failures.
+Here is a typical such failure:
+~~~
+********************** Problem 80 (line 736) ***************
+Input:
+         - v
+         ───
+          2
+specint(t    bessel_j(v, 2 sqrt(a) sqrt(t)) exp(- p t), t)
+
+
+Result:
+ v - 1   - a/p                               a
+p      %e      v gamma_incomplete_lower(v, - ─)
+                                             p
+───────────────────────────────────────────────
+                v  v/2
+           (- 1)  a    gamma(v + 1)
+
+This differed from the expected result:
+ v - 1   - a/p                             - a
+p      %e      v gamma_incomplete_lower(v, ───)
+                                            p
+───────────────────────────────────────────────
+            v/2      v
+           a    (- 1)  gamma(v + 1)
+
+~~~
 
 Running the testsuite calls `ordmexpt` about two million times, so we need to be
 concerned with its efficiency. In addition to fixing bug #4383, the modified `ordmexpt` function fixes two testsuite failures; one of these is 
@@ -40,4 +66,3 @@ ind
 This bug fix is *not* related to the extra simplifications in `approx-alike`.
 
 
-Running the full testsuite (including the share testsuite) results in fifty-six testsuite failures. Of these failures, `approx-alike` indicates that at least twenty-five of the failures are syntactic. Finally, the full testsuite calls `ordmexpt` about six million times.

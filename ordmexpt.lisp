@@ -86,13 +86,24 @@ Return old value = false
       (every #'my-constantp (margs e))))
 
 ;; Return great(x,y), where x is an mexpt expression and y is any Maxima
-;; expression.
+;; expression. Notes:
+
+;; Case II: We define odermexpt(X, subscripted variable) = t. 
+;; Without this rule, rtest_rules 207 & 208 fail. Possibly,
+;; pattern matching is too sensitive to changes in ordering.
+
+;; Case III Something like this is needed for rtest_limit 71 & 73.
+
+;; Case  IV: Without the %cos %sin check, we get an error for 
+;; block([domain : complex], integrate(exp(acsc(x)),x));
 
 (defvar *calls-to-ordmexpt* 0)
 (defvar *bad* nil)
+(defvar *badnews* nil)
 (defun ordmexpt-new (x y)
-  "Subroutine to function 'great'. Requires `x` to be in `mexpt` form; `y` may 
-  or may not be an `mexpt` expression."
+  "Subroutine to function 'great'. Requires `x` to be and `mexpt` expression; `y` may 
+  or may not be an `mexpt` expression, but `y` is *not* an `mplus` or `mtimes` 
+  expression."
 
     (incf *calls-to-ordmexpt* 1)
     (when *debug-ordmexpt*   
@@ -106,29 +117,30 @@ Return old value = false
         (base-y (if (mexptp y) (second y) y))
         (exp-y (if (mexptp y) (third y) 1)))
     (cond
-      ;; Bases are alike; compare exponents
+      ;; Case I: bases are alike; compare exponents
       ((alike1 base-x base-y)
        (great exp-x exp-y))
-      ;; If base of x is an integer and y is atomic, return true
-      ;; This case is needed rtest_rules.mac problems 207 & 208)
-      ((and (integerp base-x) ($mapatom y)) t)
+      ;; Case II: Special case when y is a subscripted variable. 
+      (($subvarp y) t)
+
+      ;; Cases III-V
       (t
        (let ((x-const (my-constantp x))
              (y-const (my-constantp y)))
          (cond
-           ;; non-constant x is greater than constant y (needed for rtest_limit 71 & 73)
+           ;; Case III: non-constant x is greater than constant y.
            ((and (not x-const) y-const) t)
-           ;; constant x is not greater than non-constant y
            ((and (not y-const) x-const) nil)
-           ;; rules for great(%e^X, (=/= %e)^Y) = t. Without the %cos %sin check, we
-           ;; get an error for block([domain : complex], integrate(exp(acsc(x)),x));
-           ((and (eq base-x '$%e)) 
-            (not (and (consp y) (member (caar y) '(%cos %sin) :test #'eq)))
+
+           ;; Case IV: rules for great(%e^X, (=/= %e)^Y) = t.
+           ((and (eq base-x '$%e) 
+            (not (and (consp y) (member (caar y) '(%cos %sin) :test #'eq))))
              t)
-           ((and (eq base-y '$%e))  
-            (not (and (consp x) (member (caar x) '(%cos %sin) :test #'eq)))
+           ((and (eq base-y '$%e)
+            (not (and (consp x) (member (caar x) '(%cos %sin) :test #'eq))))
             nil)
-           ;; default: comparison between bases
+
+           ;; Case V: default: comparison between bases
            (t (great base-x base-y))))))))
 
 (defvar $xxx)
@@ -139,3 +151,4 @@ Return old value = false
   (mtell "Calls to ordmexpt = ~M ~%" *calls-to-ordmexpt*)
   (mtell "Return old value = ~M ~%" *old*)
   '$done)
+
