@@ -47,7 +47,7 @@ p      %e      v gamma_incomplete_lower(v, ───)
 ~~~
 
 Running the testsuite calls `ordmexpt` about two million times, so we need to be
-concerned with its efficiency. In addition to fixing bug #4383, the modified `ordmexpt` function fixes two testsuite failures; one of these is 
+concerned with its efficiency. In addition to fixing bug #4383, the modified `ordmexpt` function fixes two testsuite failures-they are `rtest1`, #183 and `rtest_limit_extra` #259; the limit bug is  
 ~~~
 Running tests in rtest_limit_extra:
 ********************** Problem 259 (line 909) ***************
