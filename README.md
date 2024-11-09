@@ -17,7 +17,7 @@ to both the expected and actual outputs. This modified function is *not*
 intended as a replacement to `approx-alike`. 
 
 The last I tried, my alternative `ordmexpt` function runs the testsuite, including
-the share testsuite, with fifty-five unexpected failures. Of these failures, the alternative `approx-alike` determines that twenty-six of these failures are syntactic. Of the remaining twenty-nine failures, many are syntactic failures.
+the share testsuite, with fifty-seven unexpected failures. Of these failures, the alternative `approx-alike` determines that twenty-three of these failures are syntactic. Of the remaining thirty-four failures, many are syntactic failures.
 Here is a typical such failure:
 ~~~
 ********************** Problem 80 (line 736) ***************
