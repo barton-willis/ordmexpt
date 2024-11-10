@@ -79,10 +79,45 @@ During that period, and with 16 available CPU cores,
            ;; Case IV: rules for great(%e^X, Y).
            ((and (eq base-x '$%e) 
                  (not (and (consp y) (member (caar y) '(%cos %sin) :test #'eq))))
-             t)
+           t)
            ((and (eq base-y '$%e)
-                  (not (and (consp x) (member (caar x) '(%cos %sin) :test #'eq))))
+                 (not (and (consp x) (member (caar x) '(%cos %sin) :test #'eq))))
             nil)
 
            ;; Case V: default: comparison between bases
            (t (great base-x base-y))))))))
+
+;; Arguably, this version of `ordlist` is more tidy than is the standard version.
+;; But this version (i) fixes no bugs (ii) is no more efficient. Thus, I'm not
+;; proposing that this code replace the current `ordlist`.
+
+;; Using 'great', compare the CL lists a and b elementwise in reverse order. 
+;; For unequal list lengths, the arguments ida and idb give default values
+;; for comparision. When ida or idb is 'mplus', compare to zero, othewise
+;; compare to one.
+(defun ordlistxxx (a b ida idb)
+  "Subroutine to function 'great'. Using 'great', compare two lists of expressions `a` and `b` in reverse order, 
+   using `ida` and `idb` as default values for missing elements."
+  ;; Reverse lists a and b
+  (setq a (reverse a)
+        b (reverse b))
+  ;; Set ida and idb based on their initial values
+  (setq ida (if (eq ida 'mplus) 0 1)
+        idb (if (eq idb 'mplus) 0 1))
+
+  ;; Iterate through lists a and b
+  (catch 'terminate
+    (while (or a b)
+      (cond 
+       ;; Case when a is null
+       ((null a) 
+        (throw 'terminate (great ida (car b))))
+       ;; Case when b is null
+       ((null b) 
+        (throw 'terminate (great (car a) idb)))
+       ;; Case when heads of a and b are alike
+       ((alike1 (car a) (car b)) 
+        (setq a (cdr a)
+              b (cdr b)))
+       ;; Default case: compare heads of a and b
+       (t (throw 'terminate (great (car a) (car b))))))))
