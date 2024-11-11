@@ -95,7 +95,7 @@ During that period, and with 16 available CPU cores,
 ;; For unequal list lengths, the arguments ida and idb give default values
 ;; for comparision. When ida or idb is 'mplus', compare to zero, othewise
 ;; compare to one.
-(defun ordlistxxx (a b ida idb)
+(defun ordlist (a b ida idb)
   "Subroutine to function 'great'. Using 'great', compare two lists of expressions `a` and `b` in reverse order, 
    using `ida` and `idb` as default values for missing elements."
   ;; Reverse lists a and b
@@ -126,22 +126,30 @@ During that period, and with 16 available CPU cores,
   (cond ((numberp a)
 	 (or (not (eq (caar e) 'rat))
 	     (> (cadr e) (* (caddr e) a))))
+           
         ((and (constant a)
               (not (member (caar e) '(mplus mtimes mexpt))))
 	 (not (member (caar e) '(rat bigfloat))))
 	((eq (caar e) 'mrat)) ;; all MRATs succeed all atoms
 	((null (margs e)) nil)
 	((eq (caar e) 'mexpt) (ordmexpt e a)) ;;changed from original!!	
+
+      ;; should we call ordfn instead for the next three cases? And why
+      ;; the special cases for '%del. And what is %del?
       ((member (caar e) '(mplus mtimes))
 	 (let ((u (car (last e))))
 	   (cond ((eq u a) (not (ordhack e))) (t (great u a)))))
+
 	((eq (caar e) '%del))
+
 	((prog2 (setq e (car (margs e)))	; use first arg of e
 	     (and (not (atom e)) (member (caar e) '(mplus mtimes))))
 	 (let ((u (car (last e))))		; and compare using 
 	   (cond ((eq u a) (not (ordhack e)))	; same procedure as above
 		 (t (great u a)))))
 	((eq e a))
+
+      ;; Looks like and infinite loop?  What's the story?
 	(t (great e a))))
 
 
