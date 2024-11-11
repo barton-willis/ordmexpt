@@ -138,25 +138,35 @@ During that period, and with 16 available CPU cores,
       ((eq (caar e) 'mexpt) (ordmexpt e a))
 
       ;; should we call ordfn instead for the next three cases? And why
-      ;; the special cases for '%del? And what is %del? Finally what does the
-      ;; function with the sketchy name (ordhack) do?
-	((member (caar e) '(mplus mtimes))
-	 (let ((u (car (last e))))
-	   (cond ((eq u a) (not (ordhack e))) (t (great u a)))))
+      ;; the special cases for '%del? Finally what does the function with 
+      ;; the sketchy name (ordhack) do? But ordfn requires that nither 
+      ;; input be an atom.
 
-	((eq (caar e) '%del))
+      ((member (caar e) '(mplus mtimes %del) :test #'eq)
+       (ordfn e a))
+
+	;((member (caar e) '(mplus mtimes))
+	; (let ((u (car (last e))))
+	;   (cond ((eq u a) (not (ordhack e))) (t (great u a)))))
+	;((eq (caar e) '%del))
 	((prog2 (setq e (car (margs e)))	; use first arg of e
 	     (and (not (atom e)) (member (caar e) '(mplus mtimes))))
 	 (let ((u (car (last e))))		; and compare using 
 	   (cond ((eq u a) (not (ordhack e)))	; same procedure as above
 		 (t (great u a)))))
-
 	((eq e a))
+	(t (great e a))))
 
-      ;; Looks like an infinite loop? What's the story? I think that here
-      ;; e is an atom. Maybe this case should be handled first? And maybe
-      ;; the atom-atom case should be split off from great?
-    (t
-     (push (ftake 'mlist e a) *worry*)
-     (great e a))))
+;; one of the exprs x or y should be one of:
+;; %del, mexpt, mplus, mtimes
+(defun ordfn (x y)
+  (let ((cx (caar x)) (cy (if (consp y) (caar y) 'mplus)))
 
+    (cond ((eq cx '%del) (if (eq cy '%del) (great (cadr x) (cadr y)) t))
+	  ((eq cy '%del) nil)
+	  ((or (eq cx 'mtimes) (eq cy 'mtimes))
+	   (ordlist (factor-list x) (factor-list y) 'mtimes 'mtimes))
+	  ((or (eq cx 'mplus) (eq cy 'mplus))
+	   (ordlist (term-list x) (term-list y) 'mplus 'mplus))
+	  ((eq cx 'mexpt) (ordmexpt x y))
+	  ((eq cy 'mexpt) (not (ordmexpt y x))))))

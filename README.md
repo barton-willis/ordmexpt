@@ -18,7 +18,7 @@ intended as a replacement to `approx-alike`.
 
 The last I tried, my alternative `ordmexpt` function runs the testsuite, including
 the share testsuite, with seventy-eight unexpected failures. Of these failures, the alternative `approx-alike` determines that fifty-one of these failures are syntactic. Of the remaining twenty-seven failures, some are syntactic failures, others are failures such as a integral nounform when the result should be explicit. 
-Here is a typical syntactical such failure:
+Here is a typical syntactic failure:
 ~~~
 ********************** Problem 80 (line 736) ***************
 Input:
