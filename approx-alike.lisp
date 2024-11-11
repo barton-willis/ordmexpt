@@ -10,7 +10,10 @@
         (approx-alike-h (resimplify f) (resimplify g))
         (let (($keepfloat t)) 
                (approx-alike-h (sratsimp (resimplify f)) 
-			                   (sratsimp (resimplify g))))))
+			                   (sratsimp (resimplify g))))
+		(let (($keepfloat t)) 
+               (approx-alike-h ($factor ($expand f)) 
+			                   ($factor ($expand g))))))					   
 
 (defun approx-alike-h (f g)
   

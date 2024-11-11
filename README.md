@@ -17,8 +17,8 @@ to both the expected and actual outputs. This modified function is *not*
 intended as a replacement to `approx-alike`. 
 
 The last I tried, my alternative `ordmexpt` function runs the testsuite, including
-the share testsuite, with fifty-seven unexpected failures. Of these failures, the alternative `approx-alike` determines that twenty-three of these failures are syntactic. Of the remaining thirty-four failures, many are syntactic failures.
-Here is a typical such failure:
+the share testsuite, with seventy-eight unexpected failures. Of these failures, the alternative `approx-alike` determines that fifty-one of these failures are syntactic. Of the remaining twenty-seven failures, some are syntactic failures, others are failures such as a integral nounform when the result should be explicit. 
+Here is a typical syntactical such failure:
 ~~~
 ********************** Problem 80 (line 736) ***************
 Input:
@@ -45,9 +45,7 @@ p      %e      v gamma_incomplete_lower(v, ───)
            a    (- 1)  gamma(v + 1)
 
 ~~~
-The file `rtest_great` test the function `great`. Currently, with the new `ordmexpt` 
-function several tests fail. Until these failures are sorted, this code is only 
-experimental.
+The file `rtest_great` test the function `great`. There is another test file (`rtest_shame`) of serious bugs that I have collected.
 
 Running the testsuite calls `ordmexpt` about two million times, so we need to be
 concerned with its efficiency. In addition to fixing bug #4383, the modified `ordmexpt` function fixes two testsuite failures-they are `rtest1`, #183 and `rtest_limit_extra` #259; the limit bug is  

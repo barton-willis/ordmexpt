@@ -122,34 +122,41 @@ During that period, and with 16 available CPU cores,
        ;; Default case: compare heads of a and b
        (t (throw 'terminate (great (car a) (car b))))))))
 
+
+(defvar *worry* nil)
 (defun ordfna (e a)			; A is an atom
   (cond ((numberp a)
 	 (or (not (eq (caar e) 'rat))
 	     (> (cadr e) (* (caddr e) a))))
-           
         ((and (constant a)
               (not (member (caar e) '(mplus mtimes mexpt))))
 	 (not (member (caar e) '(rat bigfloat))))
 	((eq (caar e) 'mrat)) ;; all MRATs succeed all atoms
 	((null (margs e)) nil)
-	((eq (caar e) 'mexpt) (ordmexpt e a)) ;;changed from original!!	
+
+      ;; Change from standard--now call ordmexpt directly
+      ((eq (caar e) 'mexpt) (ordmexpt e a))
 
       ;; should we call ordfn instead for the next three cases? And why
-      ;; the special cases for '%del. And what is %del?
-      ((member (caar e) '(mplus mtimes))
+      ;; the special cases for '%del? And what is %del? Finally what does the
+      ;; function with the sketchy name (ordhack) do?
+	((member (caar e) '(mplus mtimes))
 	 (let ((u (car (last e))))
 	   (cond ((eq u a) (not (ordhack e))) (t (great u a)))))
 
 	((eq (caar e) '%del))
-
 	((prog2 (setq e (car (margs e)))	; use first arg of e
 	     (and (not (atom e)) (member (caar e) '(mplus mtimes))))
 	 (let ((u (car (last e))))		; and compare using 
 	   (cond ((eq u a) (not (ordhack e)))	; same procedure as above
 		 (t (great u a)))))
+
 	((eq e a))
 
-      ;; Looks like and infinite loop?  What's the story?
-	(t (great e a))))
-
+      ;; Looks like an infinite loop? What's the story? I think that here
+      ;; e is an atom. Maybe this case should be handled first? And maybe
+      ;; the atom-atom case should be split off from great?
+    (t
+     (push (ftake 'mlist e a) *worry*)
+     (great e a))))
 
