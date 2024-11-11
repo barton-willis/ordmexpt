@@ -23,6 +23,10 @@ F(L);
 (domain : complex, declare(z,complex),0);
 0$
 
+(L : [2/3, -1/8,a,b,-a,-b, a[1], z[a], exp(x),exp(-x),1/a,1/b,-1/a, -1/b,a/b, %pi, 
+    x^2, x^%pi, %pi^x, 2^(2/3),sqrt(exp(z)),exp(z),cos(x),tan(x),sin(x)],0);
+0$
+    
 F(L);
 []$
 
