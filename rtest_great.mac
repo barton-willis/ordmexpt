@@ -5,7 +5,7 @@
 (F(L) := block([a,b,c,p1,p2,p3,p4,p5,p6,ok,fail : []],
  for a in L do (
   for b in L do (
-     for c Fin L do (
+     for c in L do (
             p1 : sort([a,b,c]), 
             p2 : sort([c,a,b]), 
             p3 : sort([b,c,a]), 
