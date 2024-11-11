@@ -65,7 +65,7 @@ During that period, and with 16 available CPU cores,
       ((alike1 base-x base-y)
        (great exp-x exp-y))
       ;; Case II: Special case when y is a subscripted variable. 
-      (($subvarp y) t)
+      ;(($subvarp y) t)
 
       ;; Cases III-V
       (t
@@ -77,12 +77,12 @@ During that period, and with 16 available CPU cores,
            ((and (not y-const) x-const) nil)
 
            ;; Case IV: rules for great(%e^X, Y).
-           ((and (eq base-x '$%e) 
-                 (not (and (consp y) (member (caar y) '(%cos %sin) :test #'eq))))
-           t)
-           ((and (eq base-y '$%e)
-                 (not (and (consp x) (member (caar x) '(%cos %sin) :test #'eq))))
-            nil)
+          ; ((and (eq base-x '$%e) 
+         ;        (not (and (consp y) (member (caar y) '(%cos %sin) :test #'eq))))
+        ;   t)
+         ;  ((and (eq base-y '$%e)
+        ;         (not (and (consp x) (member (caar x) '(%cos %sin) :test #'eq))))
+        ;    nil)
 
            ;; Case V: default: comparison between bases
            (t (great base-x base-y))))))))
@@ -121,3 +121,27 @@ During that period, and with 16 available CPU cores,
               b (cdr b)))
        ;; Default case: compare heads of a and b
        (t (throw 'terminate (great (car a) (car b))))))))
+
+(defun ordfna (e a)			; A is an atom
+  (cond ((numberp a)
+	 (or (not (eq (caar e) 'rat))
+	     (> (cadr e) (* (caddr e) a))))
+        ((and (constant a)
+              (not (member (caar e) '(mplus mtimes mexpt))))
+	 (not (member (caar e) '(rat bigfloat))))
+	((eq (caar e) 'mrat)) ;; all MRATs succeed all atoms
+	((null (margs e)) nil)
+	((eq (caar e) 'mexpt) (ordmexpt e a)) ;;changed from original!!	
+      ((member (caar e) '(mplus mtimes))
+	 (let ((u (car (last e))))
+	   (cond ((eq u a) (not (ordhack e))) (t (great u a)))))
+	((eq (caar e) '%del))
+	((prog2 (setq e (car (margs e)))	; use first arg of e
+	     (and (not (atom e)) (member (caar e) '(mplus mtimes))))
+	 (let ((u (car (last e))))		; and compare using 
+	   (cond ((eq u a) (not (ordhack e)))	; same procedure as above
+		 (t (great u a)))))
+	((eq e a))
+	(t (great e a))))
+
+
