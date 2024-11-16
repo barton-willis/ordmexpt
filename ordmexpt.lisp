@@ -1,28 +1,45 @@
-#|
-Error summary:
+#| Using SBCL & running testsuite and the share testsuite:
+
 Error(s) found:
-     /rtest14.mac problem:    (80)
-     /rtestode.mac problem:    (64)
-     /rtest3.mac problems:    (66 67 68 69 71 74)
-     /rtest_hypgeo.mac problem:    (71)
-     /rtestint.mac problems:    (197 198 199 200 201 306)
-     /rtest_gamma.mac problem:    (330)
-     /rtest_integrate.mac problems:
-    (41 42 43 44 95 97 360 362 372 374 404 414 416 441 456 525 526 527 528 529 530 534 535 537 538)
-     /rtest_powerseries.mac problems:    (45 48)
-     /rtest_trace.mac problem:    (87)
-     /rtest_unicode_display.mac problems:    (77 90 91 92 93)
+   rtest7.mac problems:    (27 28 29)
+   rtest9a.mac problem:    (12)
+   rtest15.mac problem:    (7)
+   rtestode.mac problem:    (86)
+   rtest_gamma.mac problems:    (384 390)
+   rtest_integrate.mac problems:
+    (47 50 53 56 59 62 76 135 136 137 138 320 322 346 348 439 550)
+   rtest_limit.mac problems:    (71 73)
+   rtest_limit_extra.mac problem:    (116)
+  rtest_to_poly_solve.mac problems:     (166 216)
 Tests that were expected to fail but passed:
-     /rtest1.mac problem:    (183)
-     /rtest_limit_extra.mac problem:    (259)
-49 tests failed out of 14,023 total tests.
-(TESTSUITE)
-took 213,331,000 microseconds (213.331000 seconds) to run.
-       4,194,441 microseconds (  4.194441 seconds, 1.97%) of which was spent in GC.
-During that period, and with 16 available CPU cores,
-      45,468,750 microseconds ( 45.468750 seconds) were spent in user mode
-      22,500,000 microseconds ( 22.500000 seconds) were spent in system mode
- 46,014,970,016 bytes of memory allocated.
+   rtest1.mac problem:    (183)
+   rtestsum.mac problem:    (95)
+   rtest_limit_extra.mac problem:    (259)
+   rtest_hg.mac problem:    (87)
+   fourier_elim/rtest_fourier_elim.mac problem:    (149)
+   rtest_romberg.mac problem:    (18)
+   rtest_to_poly_solve.mac problem:    (322)
+   rtest_raddenest.mac problem:   (123)
+
+30 tests failed out of 18,886 total tests.
+Evaluation took:
+  356.769 seconds of real time
+  328.437500 seconds of total run time (226.609375 user, 101.828125 system)
+  [ Real times consist of 12.146 seconds GC time, and 344.623 seconds non-GC time. ]
+  [ Run times consist of 11.437 seconds GC time, and 317.001 seconds non-GC time. ]
+  92.06% CPU
+  347,835 forms interpreted
+  347,939 lambdas converted
+  712,179,189,850 processor cycles
+  124,083,954,800 bytes consed
+
+  rtest_shame:
+
+  The following 4 problems failed: (1 3 11 12)
+
+
+rtest_great: (all tests pass)
+
 
  |#
 
@@ -78,13 +95,10 @@ During that period, and with 16 available CPU cores,
         (base-y (if (mexptp y) (second y) y))
         (exp-y (if (mexptp y) (third y) 1)))
     (cond
-      ;; Case I: bases are alike; compare exponents
+      ;; bases are alike; compare exponents
       ((alike1 base-x base-y)
        (great exp-x exp-y))
-
-      ;((not (mexptp y)) nil)
-
-      ;; Case V: default: comparison between bases
+      ;; default: comparison between bases
       (t (great base-x base-y)))))
 
 ;; Arguably, this version of `ordlist` is more tidy than is the standard version.
