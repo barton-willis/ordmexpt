@@ -73,6 +73,7 @@ rtest_great: (all tests pass)
 	(t (great (simpln1 x)
 		  (ftake '%log y)))))
 
+;; This function is nolonger used.
 (defun my-constantp (e &optional (constants *builtin-numeric-constants*))
  "Return t if every leaf of Maxima expression `e` is either a number, 
   a declared system constant, or in the CL list `constants`."
@@ -84,16 +85,19 @@ rtest_great: (all tests pass)
 
 ;; Return great(x,y), where x is an mexpt expression and y is any Maxima
 ;; expression. 
-
 (defun ordmexpt (x y)
   "Subroutine to function 'great'. Requires `x` to be and `mexpt` expression; `y` may 
   or may not be an `mexpt` expression and `y` is *not* an `mplus` or `mtimes` 
   expression."
   ;; Decompose both x & y as x = base-x^exp-x & y = base-y^exp-y. The input x is 
   ;; required to be an mexpt expression, but y need not be an mexpt expression.
-  (let ((base-x (second x)) (exp-x (third x))
-        (base-y (if (mexptp y) (second y) y))
-        (exp-y (if (mexptp y) (third y) 1)))
+  (let ((base-x (second x)) (exp-x (third x)) (base-y) (exp-y))
+
+    (if (mexptp y)
+      (setq base-y (second y)
+            exp-y (third y))
+       (setq base-y y
+            exp-y 1))
     (cond
       ;; bases are alike; compare exponents
       ((alike1 base-x base-y)
@@ -162,6 +166,7 @@ rtest_great: (all tests pass)
 	 (let ((u (car (last e))))		; and compare using 
 	   (cond ((eq u a) (not (ordhack e)))	; same procedure as above
 		 (t (great u a)))))
+
 	((eq e a))
 	(t (great e a))))
 
