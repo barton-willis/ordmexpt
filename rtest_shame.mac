@@ -7,7 +7,7 @@ ode2(y * 'diff(y,x,2) = a,y,x);
         /(sqrt(2)*sqrt(a)))
          = x+%k2]$
          
-integrate(exp(2*%i*x)/(3+exp(%i*x)),x,0,2*%pi);
+expand(integrate(exp(2*%i*x)/(3+exp(%i*x)),x,0,2*%pi));
 0$
 
 limit((1+sqrt(1+n))^(-n-1)/(1+sqrt(n))^-n,n,inf);
@@ -34,3 +34,9 @@ integrate(exp(acsc(x)),x)$
 
 limit(exp(exp(exp(x)/(1 - 1/x))) - exp(exp(exp(x)/(1 - 1/x - log(x)^(-log(x))))), x, inf);
 minf$
+
+ limit((3^(1/x) + 5^(1/x))^x,x,0, 'minus);
+ 3$
+
+  limit((3^(1/x) + 5^(1/x))^x,x,0);
+  ind$

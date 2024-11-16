@@ -1,5 +1,12 @@
-(L : [2/3, -1/8,a,b,-a,-b, a[1], z[a], exp(x),exp(-x),1/a,1/b,-1/a, -1/b,a/b, %pi, 
-    x^2, x^%pi, %pi^x, 2^(2/3),sqrt(exp(z)),exp(z),cos(x),tan(x),sin(x)],0);
+/* Some tests taken from #4383 great not transitive (so simplifya not idempotent) */
+
+(kill(all), 0);
+0$
+
+(L : [2/3, -1/8,%i, %pi, inf, und, minf, a,b,-a,-b, a[1], z[a], rat(x), rat(a+b), exp(x),exp(-x),1/a,1/b,-1/a, -1/b,a/b, %pi, 
+    x^2, x^%pi, %pi^x, 2^(2/3),sqrt(exp(z)),exp(z),cos(x),tan(x),sin(x), diff(x),
+    a+b,c/d, cos(z), box(a,42), box(-a,42),true, false, a*b, a+b+c,a=b, a>b,f(a,b,a),
+    'diff(f,x), 'integrate(g(x),x), [],[false], [[]] ],0);
 0$
 
 (F(L) := block([a,b,c,p1,p2,p3,p4,p5,p6,ok,fail : []],
@@ -53,7 +60,8 @@ block([ok : true],
   ok);
 true$
 
-(kill(L),remfun(F),kill(bad),0);
+/* Did we make a mess? Let's clean it up!*/
+(remvalue(L),remfun(F),remvalue(bad),0);
 0$
 
 values;

@@ -1,3 +1,37 @@
 
 /* Maxima error log from tests in C:/Users/barto/OneDrive/Documents/GitHub/ordmexpt/ordmexpt/rtest_shame.mac */
 
+/* Problem 1 (line 2) */
+ode2(y*'diff(y,x,2) = a,y,x);
+/* Erroneous Result?:
+[-(('integrate(1/sqrt(a*log(y)+%k1*a),y))/sqrt(2)) = x+%k2,
+ ('integrate(1/sqrt(a*log(y)+%k1*a),y))/sqrt(2) = x+%k2] */ 
+/* Expected result: */
+[(sqrt(%pi)*%i*%e^-%k1*erf((%i*sqrt(a*log(y)+%k1*a))/sqrt(a)))
+  /(sqrt(2)*sqrt(a))
+   = x+%k2,
+ -((sqrt(%pi)*%i*%e^-%k1*erf((%i*sqrt(a*log(y)+%k1*a))/sqrt(a)))
+  /(sqrt(2)*sqrt(a)))
+   = x+%k2];
+
+/* Problem 3 (line 13) */
+limit((1+sqrt(1+n))^(-n-1)/(1+sqrt(n))^-n,n,inf);
+/* Erroneous Result?:
+'limit((sqrt(n)+1)^n*(sqrt(n+1)+1)^(-n-1),n,inf) */ 
+/* Expected result: */
+0;
+
+/* Problem 11 (line 38) */
+limit((3^(1/x)+5^(1/x))^x,x,0,'minus);
+/* Erroneous Result?:
+und */ 
+/* Expected result: */
+3;
+
+/* Problem 12 (line 41) */
+limit((3^(1/x)+5^(1/x))^x,x,0);
+/* Erroneous Result?:
+und */ 
+/* Expected result: */
+ind;
+

@@ -1,3 +1,5 @@
+(in-package :maxima)
+
 ;; This is version of approx-alike that applies `resimplify` and `ratsimp` to each 
 ;; input at the top level. This version helps find testsuite failures that are 
 ;; purely syntatic. It is *not* intended to be a replacment to the standard 

@@ -26,29 +26,47 @@ During that period, and with 16 available CPU cores,
 
  |#
 
+(defun ordmexpt-999 (x y)
+      (let ((old (ordmexpt-old x y))
+            (new (ordmexpt-new x y)))
+
+      ;(when (not (alike1 old new))
+       ;     (mtell "x = ~M ; y = ~M ; old = ~M ; new = ~M  ~%" x y old new))
+      new))
+
+ (defun ordmexpt-old (x y)
+  (cond ((eq (caar y) 'mexpt)
+	 (cond ((alike1 (cadr x) (cadr y)) (great (caddr x) (caddr y)))
+	       ((maxima-constantp (cadr x))
+		(if (maxima-constantp (cadr y))
+		    (if (or (alike1 (caddr x) (caddr y))
+			    (and (mnump (caddr x)) (mnump (caddr y))))
+			(great (cadr x) (cadr y))
+			(great (caddr x) (caddr y)))
+		    (great x (cadr y))))
+	       ((maxima-constantp (cadr y)) (great (cadr x) y))
+	       ((mnump (caddr x))
+		(great (cadr x) (if (mnump (caddr y)) (cadr y) y)))
+	       ((mnump (caddr y)) (great x (cadr y)))
+	       (t (let ((x1 (simpln1 x)) (y1 (simpln1 y)))
+		    (if (alike1 x1 y1) (great (cadr x) (cadr y))
+			(great x1 y1))))))
+	((alike1 (cadr x) y) (great (caddr x) 1))
+	((mnump (caddr x)) (great (cadr x) y))
+	(t (great (simpln1 x)
+		  (ftake '%log y)))))
+
 (defun my-constantp (e &optional (constants *builtin-numeric-constants*))
  "Return t if every leaf of Maxima expression `e` is either a number, 
-  the imaginary unit %i, or in `constants`."
+  a declared system constant, or in the CL list `constants`."
   (if ($mapatom e)
       (or (mnump e)
-          (eq e '$%i)
+          (and (symbolp e) (get e 'sysconst)) ;catches nil, true, and $%i for example
           (member e constants :test #'eq))
       (every #'my-constantp (margs e))))
 
 ;; Return great(x,y), where x is an mexpt expression and y is any Maxima
 ;; expression. 
-
-;;Notes:
-
-;; Case II: We define odermexpt(X, subscripted variable) = t. 
-;; Without this rule, rtest_rules 207 & 208 fail. Possibly,
-;; pattern matching is too sensitive to changes in ordering.
-
-;; Case III Something like this is needed for rtest_limit 71 & 73.
-
-;; Case  IV: Without the %cos %sin check, we get an error for 
-;; block([domain : complex], integrate(exp(acsc(x)),x)). I would
-;; like to replace this case with something more logical.
 
 (defun ordmexpt (x y)
   "Subroutine to function 'great'. Requires `x` to be and `mexpt` expression; `y` may 
@@ -56,36 +74,18 @@ During that period, and with 16 available CPU cores,
   expression."
   ;; Decompose both x & y as x = base-x^exp-x & y = base-y^exp-y. The input x is 
   ;; required to be an mexpt expression, but y need not be an mexpt expression.
-  (let ((base-x (second x))
-        (exp-x (third x))
+  (let ((base-x (second x)) (exp-x (third x))
         (base-y (if (mexptp y) (second y) y))
         (exp-y (if (mexptp y) (third y) 1)))
     (cond
       ;; Case I: bases are alike; compare exponents
       ((alike1 base-x base-y)
        (great exp-x exp-y))
-      ;; Case II: Special case when y is a subscripted variable. 
-      ;(($subvarp y) t)
 
-      ;; Cases III-V
-      (t
-       (let ((x-const (my-constantp x))
-             (y-const (my-constantp y)))
-         (cond
-           ;; Case III: non-constant x is greater than constant y.
-           ((and (not x-const) y-const) t)
-           ((and (not y-const) x-const) nil)
+      ;((not (mexptp y)) nil)
 
-           ;; Case IV: rules for great(%e^X, Y).
-          ; ((and (eq base-x '$%e) 
-         ;        (not (and (consp y) (member (caar y) '(%cos %sin) :test #'eq))))
-        ;   t)
-         ;  ((and (eq base-y '$%e)
-        ;         (not (and (consp x) (member (caar x) '(%cos %sin) :test #'eq))))
-        ;    nil)
-
-           ;; Case V: default: comparison between bases
-           (t (great base-x base-y))))))))
+      ;; Case V: default: comparison between bases
+      (t (great base-x base-y)))))
 
 ;; Arguably, this version of `ordlist` is more tidy than is the standard version.
 ;; But this version (i) fixes no bugs (ii) is no more efficient. Thus, I'm not
@@ -123,32 +123,26 @@ During that period, and with 16 available CPU cores,
        (t (throw 'terminate (great (car a) (car b))))))))
 
 
-(defvar *worry* nil)
 (defun ordfna (e a)			; A is an atom
   (cond ((numberp a)
 	 (or (not (eq (caar e) 'rat))
 	     (> (cadr e) (* (caddr e) a))))
-        ((and (constant a)
+           
+      ((and (constant a)
               (not (member (caar e) '(mplus mtimes mexpt))))
+              
 	 (not (member (caar e) '(rat bigfloat))))
+       
 	((eq (caar e) 'mrat)) ;; all MRATs succeed all atoms
 	((null (margs e)) nil)
 
-      ;; Change from standard--now call ordmexpt directly
       ((eq (caar e) 'mexpt) (ordmexpt e a))
 
-      ;; should we call ordfn instead for the next three cases? And why
-      ;; the special cases for '%del? Finally what does the function with 
-      ;; the sketchy name (ordhack) do? But ordfn requires that nither 
-      ;; input be an atom.
+	((member (caar e) '(mplus mtimes) :test #'eq)
+        (ordlist (cdr e) (list a) (caar e) (caar e)))
 
-      ((member (caar e) '(mplus mtimes %del) :test #'eq)
-       (ordfn e a))
-
-	;((member (caar e) '(mplus mtimes))
-	; (let ((u (car (last e))))
-	;   (cond ((eq u a) (not (ordhack e))) (t (great u a)))))
-	;((eq (caar e) '%del))
+	((eq (caar e) '%del))
+      
 	((prog2 (setq e (car (margs e)))	; use first arg of e
 	     (and (not (atom e)) (member (caar e) '(mplus mtimes))))
 	 (let ((u (car (last e))))		; and compare using 
@@ -157,16 +151,3 @@ During that period, and with 16 available CPU cores,
 	((eq e a))
 	(t (great e a))))
 
-;; one of the exprs x or y should be one of:
-;; %del, mexpt, mplus, mtimes
-(defun ordfn (x y)
-  (let ((cx (caar x)) (cy (if (consp y) (caar y) 'mplus)))
-
-    (cond ((eq cx '%del) (if (eq cy '%del) (great (cadr x) (cadr y)) t))
-	  ((eq cy '%del) nil)
-	  ((or (eq cx 'mtimes) (eq cy 'mtimes))
-	   (ordlist (factor-list x) (factor-list y) 'mtimes 'mtimes))
-	  ((or (eq cx 'mplus) (eq cy 'mplus))
-	   (ordlist (term-list x) (term-list y) 'mplus 'mplus))
-	  ((eq cx 'mexpt) (ordmexpt x y))
-	  ((eq cy 'mexpt) (not (ordmexpt y x))))))
