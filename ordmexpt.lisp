@@ -44,11 +44,11 @@ rtest_great: (all tests pass)
  |#
 
 (defun ordmexpt-999 (x y)
-      (let ((old (ordmexpt-old x y))
+      (let ((old (if (symbolp y) nil (ordmexpt-old x y)))
             (new (ordmexpt-new x y)))
 
-      ;(when (not (alike1 old new))
-       ;     (mtell "x = ~M ; y = ~M ; old = ~M ; new = ~M  ~%" x y old new))
+      (when (not (alike1 old new))
+            (mtell "x = ~M ; y = ~M ; old = ~M ; new = ~M  ~%" x y old new))
       new))
 
  (defun ordmexpt-old (x y)
@@ -147,8 +147,7 @@ rtest_great: (all tests pass)
 	     (> (cadr e) (* (caddr e) a))))
            
       ((and (constant a)
-              (not (member (caar e) '(mplus mtimes mexpt))))
-              
+            (not (member (caar e) '(mplus mtimes mexpt) :test #'eq)))
 	 (not (member (caar e) '(rat bigfloat))))
        
 	((eq (caar e) 'mrat)) ;; all MRATs succeed all atoms
@@ -169,4 +168,3 @@ rtest_great: (all tests pass)
 
 	((eq e a))
 	(t (great e a))))
-

@@ -21,11 +21,11 @@
             p6 : sort([a,c,b]),
             ok :  is(p1=p2) and is(p2=p3) and is(p3=p4) and is(p5=p6),
             if not ok then push([a,b,c], fail)))),
-     [length(fail), fail]),0);
+     length(fail)),0);
 0$
 
 F(L);
-[0,[]]$
+0$
 
 (domain : complex, declare(z,complex),0);
 0$
@@ -35,7 +35,7 @@ F(L);
 0$
 
 F(L);
-[0,[]]$
+0$
 
 /* #4383 great not transitive (so simplifya not idempotent) */
 exp(z) + sqrt(exp(z)) + exp(z);

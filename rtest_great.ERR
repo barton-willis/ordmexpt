@@ -1,3 +1,39 @@
 
 /* Maxima error log from tests in C:/Users/barto/OneDrive/Documents/GitHub/ordmexpt/ordmexpt/rtest_great.mac */
 
+/* Problem 7 (line 37) */
+F(L),L = [2/3,-(1/8),a,b,-a,-b,a[1],z[a],%e^x,%e^-x,1/a,1/b,-(1/a),-(1/b),a/b,%pi,
+     x^2,x^%pi,%pi^x,2^(2/3),sqrt(%e^z),%e^z,cos(x),tan(x),sin(x)];
+/* Erroneous Result?:
+144 */ 
+/* Expected result: */
+0;
+
+/* Problem 8 (line 41) */
+exp(z)+sqrt(exp(z))+exp(z);
+/* Erroneous Result?:
+%e^z+sqrt(%e^z)+%e^z */ 
+/* Expected result: */
+2*exp(z)+sqrt(exp(z));
+
+/* Problem 9 (line 44) */
+is(orderlessp(exp(z),sqrt(exp(z))) # orderlessp(sqrt(exp(z)),exp(z)));
+/* Erroneous Result?:
+false */ 
+/* Expected result: */
+true;
+
+/* Problem 10 (line 47) */
+is((a^(b*d))^f(c)/(b*f(c)) = expand((a^(b*d))^f(c)/(b*f(c)),0,0));
+/* Erroneous Result?:
+false */ 
+/* Expected result: */
+true;
+
+/* Problem 12 (line 60) */
+block([ok:true],for i in bad do ok:ok and sort(i) = sort(reverse(i)),ok),bad = [[f(b),a^(b*c),b],[a^(b*c),b,f(b)],[b,f(b),a^(b*c)]];
+/* Erroneous Result?:
+false */ 
+/* Expected result: */
+true;
+
