@@ -40,38 +40,46 @@ Evaluation took:
 
 rtest_great: (all tests pass)
 
+New version:
 
- |#
+Error summary:
+Error(s) found:
+   rtest7.mac problems:    (27 28 29)
+   rtest9a.mac problem:    (12)
+   rtest15.mac problem:    (7)
+   rtestode.mac problem:    (86)
+   rtest_gamma.mac problems:    (384 390)
+   rtest_integrate.mac problems:
+    (47 50 53 56 59 62 76 135 136 137 138 320 322 346 348 439 550)
+   rtest_limit_extra.mac problems:    (57 188)
+  rtest_to_poly_solve.mac problems:    (166 216)
+Tests that were expected to fail but passed:
+   rtest1.mac problem:    (183)
+   rtest16.mac problems:    (525 526)
+   rtestsum.mac problem:    (95)
+   rtest_limit.mac problem:    (231)
+   rtest_limit_extra.mac problems:    (94 259)
+   rtest_limit_gruntz.mac problem:    (97)
+   rtest_hg.mac problem:    (87)
+   rtest_fourier_elim.mac problem:    (149)
+   rtest_romberg.mac problem:    (18)
+   rtest_to_poly_solve.mac problem:    (322)
+   rtest_raddenest.mac problem:    (123)
+29 tests failed out of 18,909 total tests.
+Evaluation took:
+  351.762 seconds of real time
+  329.406250 seconds of total run time (227.125000 user, 102.281250 system)
+  [ Real times consist of 12.904 seconds GC time, and 338.858 seconds non-GC time. ]
+  [ Run times consist of 11.984 seconds GC time, and 317.423 seconds non-GC time. ]
+  93.64% CPU
+  347,665 forms interpreted
+  348,020 lambdas converted
+  702,185,920,320 processor cycles
+  123,754,018,784 bytes consed
 
-(defun ordmexpt-999 (x y)
-      (let ((old (if (symbolp y) nil (ordmexpt-old x y)))
-            (new (ordmexpt-new x y)))
-
-      (when (not (alike1 old new))
-            (mtell "x = ~M ; y = ~M ; old = ~M ; new = ~M  ~%" x y old new))
-      new))
-
- (defun ordmexpt-old (x y)
-  (cond ((eq (caar y) 'mexpt)
-	 (cond ((alike1 (cadr x) (cadr y)) (great (caddr x) (caddr y)))
-	       ((maxima-constantp (cadr x))
-		(if (maxima-constantp (cadr y))
-		    (if (or (alike1 (caddr x) (caddr y))
-			    (and (mnump (caddr x)) (mnump (caddr y))))
-			(great (cadr x) (cadr y))
-			(great (caddr x) (caddr y)))
-		    (great x (cadr y))))
-	       ((maxima-constantp (cadr y)) (great (cadr x) y))
-	       ((mnump (caddr x))
-		(great (cadr x) (if (mnump (caddr y)) (cadr y) y)))
-	       ((mnump (caddr y)) (great x (cadr y)))
-	       (t (let ((x1 (simpln1 x)) (y1 (simpln1 y)))
-		    (if (alike1 x1 y1) (great (cadr x) (cadr y))
-			(great x1 y1))))))
-	((alike1 (cadr x) y) (great (caddr x) 1))
-	((mnump (caddr x)) (great (cadr x) y))
-	(t (great (simpln1 x)
-		  (ftake '%log y)))))
+rtest_great (all pass)
+rtest_shame 1 fails.
+|#
 
 ;; This function is nolonger used.
 (defun my-constantp (e &optional (constants *builtin-numeric-constants*))
@@ -92,7 +100,6 @@ rtest_great: (all tests pass)
   ;; Decompose both x & y as x = base-x^exp-x & y = base-y^exp-y. The input x is 
   ;; required to be an mexpt expression, but y need not be an mexpt expression.
   (let ((base-x (second x)) (exp-x (third x)) (base-y) (exp-y))
-
     (if (mexptp y)
       (setq base-y (second y)
             exp-y (third y))
@@ -147,24 +154,43 @@ rtest_great: (all tests pass)
 	     (> (cadr e) (* (caddr e) a))))
            
       ((and (constant a)
+            (consp e)
             (not (member (caar e) '(mplus mtimes mexpt) :test #'eq)))
 	 (not (member (caar e) '(rat bigfloat))))
        
 	((eq (caar e) 'mrat)) ;; all MRATs succeed all atoms
 	((null (margs e)) nil)
 
-      ((eq (caar e) 'mexpt) (ordmexpt e a))
+      ((eq (caar e) 'mexpt) 
+        (ordmexpt e a))
 
 	((member (caar e) '(mplus mtimes) :test #'eq)
         (ordlist (cdr e) (list a) (caar e) (caar e)))
 
 	((eq (caar e) '%del))
       
-	((prog2 (setq e (car (margs e)))	; use first arg of e
-	     (and (not (atom e)) (member (caar e) '(mplus mtimes))))
-	 (let ((u (car (last e))))		; and compare using 
-	   (cond ((eq u a) (not (ordhack e)))	; same procedure as above
-		 (t (great u a)))))
+      (t
+        (setq e (first (margs e)))
+        (if (alike1 e a) 
+            t 
+            (great e a)))))
 
-	((eq e a))
-	(t (great e a))))
+
+(defun tlimit-taylor (e x pt n &optional (d 0))
+	(let ((ee) 
+	      (silent-taylor-flag t) 
+	      ($taylordepth 8)
+		  ($radexpand nil)
+		  ($taylor_logexpand t)
+		  ($logexpand t))
+	    (setq ee 
+		   (ratdisrep (catch 'taylor-catch
+		                  (if (eq pt '$inf)      
+				              ($taylor e (ftake 'mlist x pt n '$asym))
+				              ($taylor e x pt n)))))
+		
+		(cond ((and ee (not (alike1 ee 0))) ee)
+			  ;; Retry if taylor returns zero and depth is less than 16
+              ((and ee (< d 16))
+			    (tlimit-taylor e x pt (* 4 (max 1 n)) (1+ d)))
+			  (t nil))))
