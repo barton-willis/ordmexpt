@@ -8,7 +8,7 @@ Error(s) found:
    rtest_integrate.mac problems:
     (47 50 53 56 59 62 76 135 136 137 138 320 322 346 348 439 550)
    rtest_limit_extra.mac problems:    (57 188)
-  C:/Users/barto/maxima-code/share/to_poly_solve/rtest_to_poly_solve.mac problems:
+  rtest_to_poly_solve.mac problems:
     (166 216)
 Tests that were expected to fail but passed:
    rtest1.mac problem:    (183)
