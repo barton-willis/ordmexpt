@@ -1,48 +1,4 @@
 #| Using SBCL & running testsuite and the share testsuite:
-
-Error(s) found:
-   rtest7.mac problems:    (27 28 29)
-   rtest9a.mac problem:    (12)
-   rtest15.mac problem:    (7)
-   rtestode.mac problem:    (86)
-   rtest_gamma.mac problems:    (384 390)
-   rtest_integrate.mac problems:
-    (47 50 53 56 59 62 76 135 136 137 138 320 322 346 348 439 550)
-   rtest_limit.mac problems:    (71 73)
-   rtest_limit_extra.mac problem:    (116)
-  rtest_to_poly_solve.mac problems:     (166 216)
-Tests that were expected to fail but passed:
-   rtest1.mac problem:    (183)
-   rtestsum.mac problem:    (95)
-   rtest_limit_extra.mac problem:    (259)
-   rtest_hg.mac problem:    (87)
-   fourier_elim/rtest_fourier_elim.mac problem:    (149)
-   rtest_romberg.mac problem:    (18)
-   rtest_to_poly_solve.mac problem:    (322)
-   rtest_raddenest.mac problem:   (123)
-
-30 tests failed out of 18,886 total tests.
-Evaluation took:
-  356.769 seconds of real time
-  328.437500 seconds of total run time (226.609375 user, 101.828125 system)
-  [ Real times consist of 12.146 seconds GC time, and 344.623 seconds non-GC time. ]
-  [ Run times consist of 11.437 seconds GC time, and 317.001 seconds non-GC time. ]
-  92.06% CPU
-  347,835 forms interpreted
-  347,939 lambdas converted
-  712,179,189,850 processor cycles
-  124,083,954,800 bytes consed
-
-  rtest_shame:
-
-  The following 4 problems failed: (1 3 11 12)
-
-
-rtest_great: (all tests pass)
-
-New version:
-
-Error summary:
 Error(s) found:
    rtest7.mac problems:    (27 28 29)
    rtest9a.mac problem:    (12)
@@ -52,7 +8,8 @@ Error(s) found:
    rtest_integrate.mac problems:
     (47 50 53 56 59 62 76 135 136 137 138 320 322 346 348 439 550)
    rtest_limit_extra.mac problems:    (57 188)
-  rtest_to_poly_solve.mac problems:    (166 216)
+  C:/Users/barto/maxima-code/share/to_poly_solve/rtest_to_poly_solve.mac problems:
+    (166 216)
 Tests that were expected to fail but passed:
    rtest1.mac problem:    (183)
    rtest16.mac problems:    (525 526)
@@ -61,24 +18,25 @@ Tests that were expected to fail but passed:
    rtest_limit_extra.mac problems:    (94 259)
    rtest_limit_gruntz.mac problem:    (97)
    rtest_hg.mac problem:    (87)
-   rtest_fourier_elim.mac problem:    (149)
+  rtest_fourier_elim.mac problem:    (149)
    rtest_romberg.mac problem:    (18)
-   rtest_to_poly_solve.mac problem:    (322)
-   rtest_raddenest.mac problem:    (123)
+  rtest_to_poly_solve.mac problem:    (322)
+  rtest_raddenest.mac problem:    (123)
 29 tests failed out of 18,909 total tests.
 Evaluation took:
-  351.762 seconds of real time
-  329.406250 seconds of total run time (227.125000 user, 102.281250 system)
-  [ Real times consist of 12.904 seconds GC time, and 338.858 seconds non-GC time. ]
-  [ Run times consist of 11.984 seconds GC time, and 317.423 seconds non-GC time. ]
-  93.64% CPU
+  500.682 seconds of real time
+  379.500000 seconds of total run time (242.859375 user, 136.640625 system)
+  [ Real times consist of 15.264 seconds GC time, and 485.418 seconds non-GC time. ]
+  [ Run times consist of 12.562 seconds GC time, and 366.938 seconds non-GC time. ]
+  75.80% CPU
   347,665 forms interpreted
-  348,020 lambdas converted
-  702,185,920,320 processor cycles
-  123,754,018,784 bytes consed
+  348,016 lambdas converted
+  999,458,155,165 processor cycles
+  123,800,642,432 bytes consed
 
-rtest_great (all pass)
-rtest_shame 1 fails.
+rtest_shame #1 fails
+
+
 |#
 
 ;; This function is nolonger used.
@@ -147,12 +105,14 @@ rtest_shame 1 fails.
        ;; Default case: compare heads of a and b
        (t (throw 'terminate (great (car a) (car b))))))))
 
-
 (defun ordfna (e a)			; A is an atom
-  (cond ((numberp a)
-	 (or (not (eq (caar e) 'rat))
-	     (> (cadr e) (* (caddr e) a))))
-           
+  (cond; ((numberp a)
+	 ;(or (not (eq (caar e) 'rat))
+	 ;    (> (cadr e) (* (caddr e) a))))
+
+      ((mnump a)
+         (if (mnump e) (eq t (mgrp e a)) t))
+
       ((and (constant a)
             (consp e)
             (not (member (caar e) '(mplus mtimes mexpt) :test #'eq)))
@@ -167,14 +127,13 @@ rtest_shame 1 fails.
 	((member (caar e) '(mplus mtimes) :test #'eq)
         (ordlist (cdr e) (list a) (caar e) (caar e)))
 
-	((eq (caar e) '%del))
+	((eq (caar e) '%del) t)
       
       (t
         (setq e (first (margs e)))
         (if (alike1 e a) 
             t 
             (great e a)))))
-
 
 (defun tlimit-taylor (e x pt n &optional (d 0))
 	(let ((ee) 
