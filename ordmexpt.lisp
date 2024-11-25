@@ -8,8 +8,8 @@ Error(s) found:
    rtest_integrate.mac problems:
     (47 50 53 56 59 62 76 135 136 137 138 320 322 346 348 439 550)
    rtest_limit_extra.mac problems:    (57 188)
-  rtest_to_poly_solve.mac problems:
-    (166 216)
+  rtest_to_poly_solve.mac problems:    (166 216)
+  
 Tests that were expected to fail but passed:
    rtest1.mac problem:    (183)
    rtest16.mac problems:    (525 526)
@@ -18,10 +18,10 @@ Tests that were expected to fail but passed:
    rtest_limit_extra.mac problems:    (94 259)
    rtest_limit_gruntz.mac problem:    (97)
    rtest_hg.mac problem:    (87)
-  rtest_fourier_elim.mac problem:    (149)
+   rtest_fourier_elim.mac problem:    (149)
    rtest_romberg.mac problem:    (18)
-  rtest_to_poly_solve.mac problem:    (322)
-  rtest_raddenest.mac problem:    (123)
+   rtest_to_poly_solve.mac problem:    (322)
+   rtest_raddenest.mac problem:    (123)
 29 tests failed out of 18,909 total tests.
 Evaluation took:
   500.682 seconds of real time
