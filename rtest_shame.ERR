@@ -4,8 +4,10 @@
 /* Problem 1 (line 2) */
 ode2(y*'diff(y,x,2) = a,y,x);
 /* Erroneous Result?:
-[-(('integrate(1/sqrt(a*log(y)+%k1*a),y))/sqrt(2)) = x+%k2,
- ('integrate(1/sqrt(a*log(y)+%k1*a),y))/sqrt(2) = x+%k2] */ 
+[(expintegral_e(1/2,-log(y)-%k1)*%e^-%k1*sqrt(a*log(y)+%k1*a))/(sqrt(2)*a)
+   = x+%k2,
+ -((expintegral_e(1/2,-log(y)-%k1)*%e^-%k1*sqrt(a*log(y)+%k1*a))/(sqrt(2)*a))
+   = x+%k2] */ 
 /* Expected result: */
 [(sqrt(%pi)*%i*%e^-%k1*erf((%i*sqrt(a*log(y)+%k1*a))/sqrt(a)))
   /(sqrt(2)*sqrt(a))
@@ -13,4 +15,11 @@ ode2(y*'diff(y,x,2) = a,y,x);
  -((sqrt(%pi)*%i*%e^-%k1*erf((%i*sqrt(a*log(y)+%k1*a))/sqrt(a)))
   /(sqrt(2)*sqrt(a)))
    = x+%k2];
+
+/* Problem 13 (line 44) */
+integrate(1/((x+1)*sqrt(4-x^2)),x,0,2);
+/* Erroneous Result?:
+'integrate(1/((x+1)*sqrt(4-x^2)),x,0,2) */ 
+/* Expected result: */
+log(4*sqrt(3)+8)/sqrt(3)-log(4)/sqrt(3);
 

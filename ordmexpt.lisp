@@ -1,4 +1,9 @@
-#| Using SBCL & running testsuite and the share testsuite:
+#| Testing with SBCL and the hacked approx-alike function that attempts to allow some
+   syntactic failures to pass. Some of the 13 unexpected successes are likely due to
+   the hacked approx-alike that allows a test to pass even when Maxima returns an
+   unsimplified result.
+
+Error summary:
 Error(s) found:
    rtest7.mac problems:    (27 28 29)
    rtest9a.mac problem:    (12)
@@ -7,9 +12,10 @@ Error(s) found:
    rtest_gamma.mac problems:    (384 390)
    rtest_integrate.mac problems:
     (47 50 53 56 59 62 76 135 136 137 138 320 322 346 348 439 550)
-   rtest_limit_extra.mac problems:    (57 188)
-  rtest_to_poly_solve.mac problems:    (166 216)
-  
+   rtest_limit_extra.mac problems:    (57 100 188)
+   rtest_to_poly_solve.mac problems:
+    (114 166 216)
+    
 Tests that were expected to fail but passed:
    rtest1.mac problem:    (183)
    rtest16.mac problems:    (525 526)
@@ -19,29 +25,32 @@ Tests that were expected to fail but passed:
    rtest_limit_gruntz.mac problem:    (97)
    rtest_hg.mac problem:    (87)
    rtest_fourier_elim.mac problem:    (149)
-   rtest_romberg.mac problem:    (18)
-   rtest_to_poly_solve.mac problem:    (322)
-   rtest_raddenest.mac problem:    (123)
-29 tests failed out of 18,909 total tests.
+  rtest_romberg.mac problem:    (18)
+  rtest_to_poly_solve.mac problem:    (322)
+  rtest_raddenest.mac problem:    (123)
+31 tests failed out of 18,909 total tests.
 Evaluation took:
-  500.682 seconds of real time
-  379.500000 seconds of total run time (242.859375 user, 136.640625 system)
-  [ Real times consist of 15.264 seconds GC time, and 485.418 seconds non-GC time. ]
-  [ Run times consist of 12.562 seconds GC time, and 366.938 seconds non-GC time. ]
-  75.80% CPU
+  354.791 seconds of real time
+  328.156250 seconds of total run time (224.750000 user, 103.406250 system)
+  [ Real times consist of 13.108 seconds GC time, and 341.683 seconds non-GC time. ]
+  [ Run times consist of 11.890 seconds GC time, and 316.267 seconds non-GC time. ]
+  92.49% CPU
   347,665 forms interpreted
   348,016 lambdas converted
-  999,458,155,165 processor cycles
-  123,800,642,432 bytes consed
-
-rtest_shame #1 fails
-
+  708,231,714,625 processor cycles
+  124,253,183,504 bytes consed
 
 |#
 
-;; This function is nolonger used.
+;; I now have additional fixes in 'sin.lisp', 'limit.lisp', and 'tlimit.lisp'.
+;; Let's load these files:
+($load "sin.lisp")
+($load "limit.lisp")
+($load "tlimit.lisp")
+
+;; This function is no longer used.
 (defun my-constantp (e &optional (constants *builtin-numeric-constants*))
- "Return t if every leaf of Maxima expression `e` is either a number, 
+ "Return t iff every leaf of Maxima expression `e` is either a number, 
   a declared system constant, or in the CL list `constants`."
   (if ($mapatom e)
       (or (mnump e)
@@ -49,7 +58,7 @@ rtest_shame #1 fails
           (member e constants :test #'eq))
       (every #'my-constantp (margs e))))
 
-;; Return great(x,y), where x is an mexpt expression and y is any Maxima
+;; Return great(x,y), where x is an `mexpt` expression and y is any Maxima
 ;; expression. 
 (defun ordmexpt (x y)
   "Subroutine to function 'great'. Requires `x` to be and `mexpt` expression; `y` may 
@@ -76,7 +85,7 @@ rtest_shame #1 fails
 
 ;; Using 'great', compare the CL lists a and b elementwise in reverse order. 
 ;; For unequal list lengths, the arguments ida and idb give default values
-;; for comparision. When ida or idb is 'mplus', compare to zero, othewise
+;; for comparison. When ida or idb is 'mplus', compare to zero, otherwise
 ;; compare to one.
 (defun ordlist (a b ida idb)
   "Subroutine to function 'great'. Using 'great', compare two lists of expressions `a` and `b` in reverse order, 
@@ -113,27 +122,24 @@ rtest_shame #1 fails
       ((mnump a)
          (if (mnump e) (eq t (mgrp e a)) t))
 
-      ((and (constant a)
-            (consp e)
-            (not (member (caar e) '(mplus mtimes mexpt) :test #'eq)))
-	 (not (member (caar e) '(rat bigfloat))))
+      ((and nil (constant a)
+           (consp e)
+           (not (member (caar e) '(mplus mtimes mexpt) :test #'eq)))
+           (not (member (caar e) '(rat bigfloat))))
        
 	((eq (caar e) 'mrat)) ;; all MRATs succeed all atoms
 	((null (margs e)) nil)
 
-      ((eq (caar e) 'mexpt) 
-        (ordmexpt e a))
+  ((eq (caar e) 'mexpt) (ordmexpt e a))
 
 	((member (caar e) '(mplus mtimes) :test #'eq)
         (ordlist (cdr e) (list a) (caar e) (caar e)))
 
 	((eq (caar e) '%del) t)
       
-      (t
-        (setq e (first (margs e)))
-        (if (alike1 e a) 
-            t 
-            (great e a)))))
+  (t
+    (setq e (first (margs e)))
+    (if (alike1 e a) t (great e a)))))
 
 (defun tlimit-taylor (e x pt n &optional (d 0))
 	(let ((ee) 
