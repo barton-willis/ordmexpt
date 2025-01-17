@@ -161,21 +161,3 @@
               ((and ee (< d 16))
 			    (tlimit-taylor e x pt (* 4 (max 1 n)) (1+ d)))
 			  (t nil))))
-
-(defmfun $integrate (expr x &optional lo hi)
-  (declare (special *in-risch-p*))
-  (let (($ratfac) (ans) (cntx ($supcontext)))
-    (unwind-protect 
-      (progn
-         (cond (hi ($defint expr x lo hi))
-               ((member '%risch *nounl*)
-                  (if *in-risch-p*
-                 ;; Give up; we're being called from RISCHINT by some path.
-                  ($funmake '%integrate (ftake 'mlist expr x))
-                  (rischint expr x)))
-               (t
-                 (setq ans (errcatch (sinint expr x)))
-                 (if (eq ans nil) 
-                     ($funmake '%integrate (ftake 'mlist expr x))
-                     (car ans)))))
-    ($killcontext cntx))))
