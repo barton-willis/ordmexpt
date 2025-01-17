@@ -1,52 +1,14 @@
 #| Testing with SBCL and the hacked approx-alike function that attempts to allow some
    syntactic failures to pass. Some of the 13 unexpected successes are likely due to
    the hacked approx-alike that allows a test to pass even when Maxima returns an
-   unsimplified result.
+   unsimplified result. |#
 
-Error summary:
-Error(s) found:
-   rtest7.mac problems:    (27 28 29)
-   rtest9a.mac problem:    (12)
-   rtest15.mac problem:    (7)
-   rtestode.mac problem:    (86)
-   rtest_gamma.mac problems:    (384 390)
-   rtest_integrate.mac problems:
-    (47 50 53 56 59 62 76 135 136 137 138 320 322 346 348 439 550)
-   rtest_limit_extra.mac problems:    (57 100 188)
-   rtest_to_poly_solve.mac problems:
-    (114 166 216)
-    
-Tests that were expected to fail but passed:
-   rtest1.mac problem:    (183)
-   rtest16.mac problems:    (525 526)
-   rtestsum.mac problem:    (95)
-   rtest_limit.mac problem:    (231)
-   rtest_limit_extra.mac problems:    (94 259)
-   rtest_limit_gruntz.mac problem:    (97)
-   rtest_hg.mac problem:    (87)
-   rtest_fourier_elim.mac problem:    (149)
-  rtest_romberg.mac problem:    (18)
-  rtest_to_poly_solve.mac problem:    (322)
-  rtest_raddenest.mac problem:    (123)
-31 tests failed out of 18,909 total tests.
-Evaluation took:
-  354.791 seconds of real time
-  328.156250 seconds of total run time (224.750000 user, 103.406250 system)
-  [ Real times consist of 13.108 seconds GC time, and 341.683 seconds non-GC time. ]
-  [ Run times consist of 11.890 seconds GC time, and 316.267 seconds non-GC time. ]
-  92.49% CPU
-  347,665 forms interpreted
-  348,016 lambdas converted
-  708,231,714,625 processor cycles
-  124,253,183,504 bytes consed
-
-|#
-
+ 
 ;; I now have additional fixes in 'sin.lisp', 'limit.lisp', and 'tlimit.lisp'.
 ;; Let's load these files:
-($load "sin.lisp")
-($load "limit.lisp")
-($load "tlimit.lisp")
+;($load "sin.lisp")
+;($load "limit.lisp")
+;($load "tlimit.lisp")
 
 ;; This function is no longer used.
 (defun my-constantp (e &optional (constants *builtin-numeric-constants*))
@@ -61,8 +23,8 @@ Evaluation took:
 ;; Return great(x,y), where x is an `mexpt` expression and y is any Maxima
 ;; expression. 
 (defun ordmexpt (x y)
-  "Subroutine to function 'great'. Requires `x` to be and `mexpt` expression; `y` may 
-  or may not be an `mexpt` expression and `y` is *not* an `mplus` or `mtimes` 
+  "Subroutine to function 'great'. Requires `x` to be a `mexpt` expression; `y` may 
+  or may not be a `mexpt` expression and `y` is *not* an `mplus` or `mtimes` 
   expression."
   ;; Decompose both x & y as x = base-x^exp-x & y = base-y^exp-y. The input x is 
   ;; required to be an mexpt expression, but y need not be an mexpt expression.
@@ -73,6 +35,10 @@ Evaluation took:
        (setq base-y y
             exp-y 1))
     (cond
+      ;; experimental code that makes %e^X > a^Y when a =/= %e.
+      ((and (eq base-x '$%e) (not (eq base-y '$%e))) t)
+      ((and (eq base-y '$%e) (not (eq base-x '$%e))) nil)
+
       ;; bases are alike; compare exponents
       ((alike1 base-x base-y)
        (great exp-x exp-y))
@@ -83,13 +49,14 @@ Evaluation took:
 ;; But this version (i) fixes no bugs (ii) is no more efficient. Thus, I'm not
 ;; proposing that this code replace the current `ordlist`.
 
-;; Using 'great', compare the CL lists a and b elementwise in reverse order. 
+;; Using 'great', compare the CL lists a and b element wise in reverse order. 
 ;; For unequal list lengths, the arguments ida and idb give default values
 ;; for comparison. When ida or idb is 'mplus', compare to zero, otherwise
 ;; compare to one.
 (defun ordlist (a b ida idb)
-  "Subroutine to function 'great'. Using 'great', compare two lists of expressions `a` and `b` in reverse order, 
-   using `ida` and `idb` as default values for missing elements."
+  "Subroutine to function 'great'. Using 'great', compare two lists of expressions
+  `a` and `b` in reverse order, using `ida` and `idb` as default values for missing 
+   elements."
   ;; Reverse lists a and b
   (setq a (reverse a)
         b (reverse b))
@@ -114,15 +81,15 @@ Evaluation took:
        ;; Default case: compare heads of a and b
        (t (throw 'terminate (great (car a) (car b))))))))
 
-(defun ordfna (e a)			; A is an atom
+(defun ordfna-xxx (e a)			; A is an atom
   (cond; ((numberp a)
 	 ;(or (not (eq (caar e) 'rat))
 	 ;    (> (cadr e) (* (caddr e) a))))
-
+      
       ((mnump a)
          (if (mnump e) (eq t (mgrp e a)) t))
 
-      ((and nil (constant a)
+      ((and (my-constantp a)
            (consp e)
            (not (member (caar e) '(mplus mtimes mexpt) :test #'eq)))
            (not (member (caar e) '(rat bigfloat))))
@@ -140,6 +107,41 @@ Evaluation took:
   (t
     (setq e (first (margs e)))
     (if (alike1 e a) t (great e a)))))
+
+(defvar *ouch* nil)
+(defun ordfna (e a)			; A is an atom
+  "Predicate subroutine to function 'great'. Requires `e` to be any Maxima expression and
+  `a` to be an atom."
+  (when (not (atom a))
+    (push a *ouch*))
+  (cond ((numberp a)
+	 (or (not (eq (caar e) 'rat))
+	     (> (cadr e) (* (caddr e) a))))
+        ((and (constant a)
+              (not (member (caar e) '(mplus mtimes mexpt))))
+	 (not (member (caar e) '(rat bigfloat))))
+	((eq (caar e) 'mrat)) ;; all MRATs succeed all atoms
+	((null (margs e)) nil)
+
+  ((mexptp e) (ordmexpt e a))
+	;((eq (caar e) 'mexpt)
+	; (cond ((and (maxima-constantp (cadr e))
+	;	     (or (not (constant a)) (not (maxima-constantp (caddr e)))))
+	;	(or (not (free (caddr e) a)) (great (caddr e) a)))
+	;       ((eq (cadr e) a) (great (caddr e) 1))
+	;       (t (great (cadr e) a))))
+	((member (caar e) '(mplus mtimes))
+	 (let ((u (car (last e))))
+	   (cond ((eq u a) (not (ordhack e))) (t (great u a)))))
+	((eq (caar e) '%del))
+	((prog2 (setq e (car (margs e)))	; use first arg of e
+	     (and (not (atom e)) (member (caar e) '(mplus mtimes))))
+	 (let ((u (car (last e))))		; and compare using 
+	   (cond ((eq u a) (not (ordhack e)))	; same procedure as above
+		 (t (great u a)))))
+	((eq e a))
+	(t (great e a))))
+
 
 (defun tlimit-taylor (e x pt n &optional (d 0))
 	(let ((ee) 
@@ -159,3 +161,21 @@ Evaluation took:
               ((and ee (< d 16))
 			    (tlimit-taylor e x pt (* 4 (max 1 n)) (1+ d)))
 			  (t nil))))
+
+(defmfun $integrate (expr x &optional lo hi)
+  (declare (special *in-risch-p*))
+  (let (($ratfac) (ans) (cntx ($supcontext)))
+    (unwind-protect 
+      (progn
+         (cond (hi ($defint expr x lo hi))
+               ((member '%risch *nounl*)
+                  (if *in-risch-p*
+                 ;; Give up; we're being called from RISCHINT by some path.
+                  ($funmake '%integrate (ftake 'mlist expr x))
+                  (rischint expr x)))
+               (t
+                 (setq ans (errcatch (sinint expr x)))
+                 (if (eq ans nil) 
+                     ($funmake '%integrate (ftake 'mlist expr x))
+                     (car ans)))))
+    ($killcontext cntx))))
