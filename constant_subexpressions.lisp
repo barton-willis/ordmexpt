@@ -1,3 +1,5 @@
+(in-package :maxima)
+
 (defun gather-terms (e fn) 
    "Return a CL list of the unique terms of the expression `e` that satisfy the 
     predicate `fn`. The function 'alike1' determines uniqueness. Example:
