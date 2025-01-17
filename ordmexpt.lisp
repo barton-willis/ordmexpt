@@ -9,7 +9,7 @@
 ;($load "sin.lisp")
 ;($load "limit.lisp")
 ;($load "tlimit.lisp")
-
+($load "constant_subexpressions.lisp")
 ;; This function is no longer used.
 (defun my-constantp (e &optional (constants *builtin-numeric-constants*))
  "Return t iff every leaf of Maxima expression `e` is either a number, 
