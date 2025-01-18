@@ -63,7 +63,8 @@
               (t
                  (setq subs (constant-subexpression-subs expr x))
                  (setq ee ($substitute (first subs) expr))
-                 (setq ee (resimp-extra-simp ee))   
+                 ;(setq ee (sratsimp ee))
+                 ;(mtell "ee = ~M ; expr = ~M ~%" ee expr)
                 
                  (cond ((member '%risch *nounl*) 
                           (if *in-risch-p*
