@@ -54,16 +54,19 @@
 ;; original expression.
 (defmfun $integrate (expr x &optional lo hi)
   (declare (special *in-risch-p*))
-  (let (($ratfac nil) (cntx ($supcontext)) (ee) 
-        (subs (if hi nil (constant-subexpression-subs expr x))))
+  (setq expr ($ratdisrep expr))
+   (print `(expr = ,expr))
+  (let (($ratfac nil) (cntx ($supcontext)) (ee) (subs))
     (unwind-protect
        (progn
         ($activate cntx)      
         (cond (hi ($defint expr x lo hi))
               (t
-                  (setq ee ($substitute (first subs) expr))
-                  (setq ee (resimp-extra-simp ee))   
-                  (cond ((member '%risch *nounl*) 
+                 (setq subs (constant-subexpression-subs expr x))
+                 (setq ee ($substitute (first subs) expr))
+                 (setq ee (resimp-extra-simp ee))   
+                
+                 (cond ((member '%risch *nounl*) 
                           (if *in-risch-p*
                              ($funmake '%integrate (ftake 'mlist expr x)) ;give up.
                              ($substitute (second subs) (rischint ee x))))

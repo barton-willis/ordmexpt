@@ -1,7 +1,28 @@
 #| Testing with SBCL and the hacked approx-alike function that attempts to allow some
-   syntactic failures to pass. Some of the 13 unexpected successes are likely due to
-   the hacked approx-alike that allows a test to pass even when Maxima returns an
-   unsimplified result. |#
+   syntactic failures to pass. Some (likely most) of the ten unexpected successes are 
+   due to the hacked approx-alike that allows a test to pass even when Maxima returns an
+   unsimplified result. 
+   
+Error(s) found:
+  rtest16.mac problem:    (21)
+  rtest3.mac problems:    (67 68 69 74)
+  rtest_gamma.mac problems:    (384 390)
+  rtest_integrate.mac problems:    (176 177 178 179 360 362 372 374 441 456 525 526 
+    527 528 529 530 534 535  537 538)
+  rtest_trace.mac problems:    (87 88)
+  rtest_to_poly_solve.mac problems:    (166 216)
+
+Tests that were expected to fail but passed:
+  rtest1.mac problem:    (183)
+  rtest16.mac problems:    (525 526)
+  rtestsum.mac problem:    (95)
+  rtest_limit_extra.mac problem:    (259)
+  rtest_hg.mac problem:    (87)
+  rtest_fourier_elim.mac problem:    (149)
+  rtest_romberg.mac problem:    (18)
+  rtest_to_poly_solve.mac problem:    (322)
+  rtest_raddenest.mac problem:    (123)
+31 tests failed out of 18,957 total tests. |#
 
  
 ;; I now have additional fixes in 'sin.lisp', 'limit.lisp', and 'tlimit.lisp'.
@@ -10,6 +31,7 @@
 ;($load "limit.lisp")
 ;($load "tlimit.lisp")
 ($load "constant_subexpressions.lisp")
+($load "approx-alike.lisp")
 ;; This function is no longer used.
 (defun my-constantp (e &optional (constants *builtin-numeric-constants*))
  "Return t iff every leaf of Maxima expression `e` is either a number, 
@@ -35,10 +57,9 @@
        (setq base-y y
             exp-y 1))
     (cond
-      ;; experimental code that makes %e^X > a^Y when a =/= %e.
+      ;; make %e^X > a^Y when a =/= %e.
       ((and (eq base-x '$%e) (not (eq base-y '$%e))) t)
       ((and (eq base-y '$%e) (not (eq base-x '$%e))) nil)
-
       ;; bases are alike; compare exponents
       ((alike1 base-x base-y)
        (great exp-x exp-y))
@@ -81,45 +102,19 @@
        ;; Default case: compare heads of a and b
        (t (throw 'terminate (great (car a) (car b))))))))
 
-(defun ordfna-xxx (e a)			; A is an atom
-  (cond; ((numberp a)
-	 ;(or (not (eq (caar e) 'rat))
-	 ;    (> (cadr e) (* (caddr e) a))))
-      
-      ((mnump a)
-         (if (mnump e) (eq t (mgrp e a)) t))
-
-      ((and (my-constantp a)
-           (consp e)
-           (not (member (caar e) '(mplus mtimes mexpt) :test #'eq)))
-           (not (member (caar e) '(rat bigfloat))))
-       
-	((eq (caar e) 'mrat)) ;; all MRATs succeed all atoms
-	((null (margs e)) nil)
-
-  ((eq (caar e) 'mexpt) (ordmexpt e a))
-
-	((member (caar e) '(mplus mtimes) :test #'eq)
-        (ordlist (cdr e) (list a) (caar e) (caar e)))
-
-	((eq (caar e) '%del) t)
-      
-  (t
-    (setq e (first (margs e)))
-    (if (alike1 e a) t (great e a)))))
-
-(defvar *ouch* nil)
+(defvar *iii* 0)
 (defun ordfna (e a)			; A is an atom
-  "Predicate subroutine to function 'great'. Requires `e` to be any Maxima expression and
+  "Predicate subroutine to function 'great'. Requires `e` to be a Maxima expression and
   `a` to be an atom."
-  (when (not (atom a))
-    (push a *ouch*))
+
+  (incf *iii* 1)
   (cond ((numberp a)
 	 (or (not (eq (caar e) 'rat))
 	     (> (cadr e) (* (caddr e) a))))
-        ((and (constant a)
-              (not (member (caar e) '(mplus mtimes mexpt))))
+
+  ((and (constant a) (not (member (caar e) '(mplus mtimes mexpt))))
 	 (not (member (caar e) '(rat bigfloat))))
+
 	((eq (caar e) 'mrat)) ;; all MRATs succeed all atoms
 	((null (margs e)) nil)
 
