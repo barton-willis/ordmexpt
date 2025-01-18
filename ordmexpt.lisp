@@ -22,6 +22,7 @@ Tests that were expected to fail but passed:
   rtest_romberg.mac problem:    (18)
   rtest_to_poly_solve.mac problem:    (322)
   rtest_raddenest.mac problem:    (123)
+
 31 tests failed out of 18,957 total tests. |#
 
  
@@ -136,6 +137,40 @@ Tests that were expected to fail but passed:
 		 (t (great u a)))))
 	((eq e a))
 	(t (great e a))))
+
+(defun ordfna (e a)  ; A is an atom
+  "Predicate subroutine to function 'great'. Requires `e` to be a Maxima expression and `a` to be an atom."
+  (incf *iii* 1)
+  (cond
+   ((numberp a)
+    (or (not (eq (caar e) 'rat))
+        (> (cadr e) (* (caddr e) a))))
+   
+   ((and (constant a) (not (member (caar e) '(mplus mtimes mexpt))))
+    (not (member (caar e) '(rat bigfloat))))
+   
+   ((eq (caar e) 'mrat))  ; All MRATs succeed all atoms
+   
+   ((null (margs e)) nil)
+   
+   ((mexptp e) (ordmexpt e a))
+   
+   ((member (caar e) '(mplus mtimes))
+    (let ((u (car (last e))))
+      (cond ((eq u a) (not (ordhack e)))
+            (t (great u a)))))
+   
+   ((eq (caar e) '%del))
+   
+   ((prog2 (setq e (car (margs e)))  ; Use first arg of e
+           (and (not (atom e)) (member (caar e) '(mplus mtimes))))
+    (let ((u (car (last e))))  ; Compare using the same procedure as above
+      (cond ((eq u a) (not (ordhack e)))
+            (t (great u a)))))
+   
+   ((eq e a))
+   
+   (t (great e a))))
 
 
 (defun tlimit-taylor (e x pt n &optional (d 0))
