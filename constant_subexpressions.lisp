@@ -55,7 +55,6 @@
 (defmfun $integrate (expr x &optional lo hi)
   (declare (special *in-risch-p*))
   (setq expr ($ratdisrep expr))
-   (print `(expr = ,expr))
   (let (($ratfac nil) (cntx ($supcontext)) (ee) (subs))
     (unwind-protect
        (progn
