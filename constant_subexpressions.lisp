@@ -51,7 +51,7 @@
 
 ;; Alternative top-level integrate function that replaces constant subexpressions by
 ;; a generated constant, integrates, then replaces the generated constant by its
-;; original expression.
+;; original expression. 
 (defmfun $integrate (expr x &optional lo hi)
   (declare (special *in-risch-p*))
   (setq expr ($ratdisrep expr))

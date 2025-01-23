@@ -7,57 +7,33 @@
    due to the hacked approx-alike that allows a test to pass even when Maxima 
    returns an unsimplified result. 
 
-Error(s) found:
-   rtest7.mac problems:  (27 28 29)
-   rtest9a.mac problem:  (12)
-   rtest15.mac problem:   (7)
-   rtestode.mac problem:   (86)
-   rtest_gamma.mac problems:   (384 390)
-   rtest_integrate.mac problems: (47 50 53 56 59 62 76 135 136 137 138 320 322 346 348 439 550)
-   rtest_limit_extra.mac problem:  (116)
-   rtest_to_poly_solve.mac problems: (166 216)
-
-Tests that were expected to fail but passed:
-   rtest1.mac problem:  (183)
-   rtest16.mac problems:  (525 526)
-   rtestsum.mac problem:  (95)
-   rtest_limit_extra.mac problem:  (259)
-   rtest_hg.mac problem:  (87)
-    fourier_elim/rtest_fourier_elim.mac problem:  (149)
-    numeric/rtest_romberg.mac problem:  (18)
-    to_poly_solve/rtest_to_poly_solve.mac problem:  (322)
-    raddenest/rtest_raddenest.mac problem:  (123)
-28 tests failed out of 18,957 total tests.  
-
-Without the hacked approx-alike function:
 Error summary:
 Error(s) found:
-   rtest7.mac problems:    (27 28 29)
-   rtest9.mac problem:    (54)
-   rtest9a.mac problems:    (12 14)
-   rtest14.mac problem    (50)
-   rtest15.mac problems:    (7 247)
-   rtestode.mac problem    (86)
-   rtesthyp.mac problems:    (66 67 68 69 70 71 72 73 74 75 143)
-   rtest_hypgeo.mac problems:    (83 86 132 136 156 158 159 162 175 176 211)
-   rtestint.mac problems:    (193 197 198 199 200 201 217 304)
-   rtest_gamma.mac problems:    (384 390)
-   rtest_integrate.mac problems:
-    (42 43 44 47 50 53 56 59 62 76 96 97 105 106 107 108 135 136 137 138 320
-     322 340 346 348 351 354 399 402 439 550)
-   rtest_powerseries.mac problem:   (46)
-   rtest_laplace.mac problems:    (70 100)
-   rtest_limit_extra.mac problem:    (116)
+  rtest16.mac problem:    (21)
+  rtest3.mac problems:    (67 68 69 74)
+  rtest_gamma.mac problems:    (384 390)
+  rtest_integrate.mac problems:    (176 177 178 179 360 362 372 374 441 456 
+    525 526 527 528 529 530 534 535 537 538)
+  rtest_trace.mac problems:    (87 88)
   rtest_to_poly_solve.mac problems:    (166 216)
-  rtest_antid.mac problem:    (11)
 
 Tests that were expected to fail but passed:
-   rtest1.mac problem:    (183)
-   rtest_limit_extra.mac problem:    (259)
-80 tests failed out of 18,957 total tests. |#
+  rtest1.mac problem:    (183)
+  rtest16.mac problems:    (525 526)
+  rtestsum.mac problem:    (95)
+  rtest_limit_extra.mac problem:    (259)
+  rtest_hg.mac problem:    (87)
+  rtest_fourier_elim.mac problem:    (149)
+  rtest_romberg.mac problem:    (18)
+  rtest_to_poly_solve.mac problem:    (322)
+  rtest_raddenest.mac problem:    (123)
+31 tests failed out of 18,957 total tests.
+
+
+|#
 
 ;($load "constant_subexpressions.lisp")
-;($load "approx-alike.lisp")
+($load "approx-alike.lisp")
 ;($load "nrat4.lisp")
 ;; This function is no longer used.
 (defun my-constantp (e &optional (constants *builtin-numeric-constants*))
@@ -83,13 +59,15 @@ Tests that were expected to fail but passed:
             exp-y (third y))
        (setq base-y y
             exp-y 1))
-    (cond
-      ;; make %e^X > a^Y when a =/= %e.
-      ;((and (eq base-x '$%e) (not (eq base-y '$%e))) t)
-      ;((and (eq base-y '$%e) (not (eq base-x '$%e))) nil)
+    (cond 
       ;; bases are alike; compare exponents
       ((alike1 base-x base-y)
        (great exp-x exp-y))
+      
+      ;; make %e^X > a^Y and %e^X > a when a =/= %e.
+      ((and (eq base-x '$%e) (not (eq base-y '$%e))) t)
+      ((and (eq base-y '$%e) (not (eq base-x '$%e))) nil)
+
       ;; default: comparison between bases
       (t (great base-x base-y)))))
 
@@ -163,8 +141,8 @@ Tests that were expected to fail but passed:
    
    (t (great e a))))
 
-
-(defun tlimit-taylor (e x pt n &optional (d 0))
+  
+ (defun tlimit-taylor (e x pt n &optional (d 0))
 	(let ((ee) 
 	      (silent-taylor-flag t) 
 	      ($taylordepth 8)
@@ -182,3 +160,4 @@ Tests that were expected to fail but passed:
               ((and ee (< d 16))
 			    (tlimit-taylor e x pt (* 4 (max 1 n)) (1+ d)))
 			  (t nil))))
+
