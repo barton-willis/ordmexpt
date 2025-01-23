@@ -1,4 +1,7 @@
 
+(load(ordmexpt),0);
+0$
+
 ode2(y * 'diff(y,x,2) = a,y,x);
 [(sqrt(%pi)*%i*%e^-%k1*erf((%i*sqrt(a*log(y)+%k1*a))/sqrt(a)))
         /(sqrt(2)*sqrt(a))
@@ -43,3 +46,14 @@ minf$
 
    integrate(1/((x+1)*sqrt(4-x^2)),x,0,2);
    log(4*sqrt(3)+8)/sqrt(3)-log(4)/sqrt(3)$
+
+(assume(a>0,b>0,c>0,4*a*c>b^2),0);
+0$
+
+integrate((c+b*%e^(d*x)+a*%e^(2*d*x))^(1/2),x);
+b*asinh((2*a*%e^(d*x)+b)/sqrt(4*a*c-b^2))/(2*sqrt(a)*d)
+ -sqrt(c)*asinh(2*c*%e^-(d*x)/sqrt(4*a*c-b^2)+b/sqrt(4*a*c-b^2))/d
+ +sqrt(a*%e^(2*d*x)+b*%e^(d*x)+c)/d$
+
+ (forget(a>0,b>0,c>0,4*a*c>b^2),0);
+ 0$
