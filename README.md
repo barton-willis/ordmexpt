@@ -16,36 +16,32 @@ modified function `approx-alike` that applies several transformations
 to both the expected and actual outputs. This modified function is *not* 
 intended as a replacement to `approx-alike`. 
 
-The last I tried, my alternative `ordmexpt` function runs the testsuite, including
-the share testsuite, with seventy-nine unexpected failures. Of these failures, the alternative `approx-alike` determines that fifty-one of these failures are syntactic. Of the remaining twenty-eight failures, some are syntactic failures, others are failures such as an integral nounform when the result should be explicit. 
-Here is a typical syntactic failure:
+The last I tried, my alternative `ordmexpt` function along with the modified function `approx-alike` runs the testsuite, including the share testsuite, with thirty-one unexpected failures. A typical failure is (test done with 'domain : 'complex')
 ~~~
-********************** Problem 80 (line 736) ***************
+********************** Problem 537 (line 2960) ***************
 Input:
-         - v
-         ───
-          2
-specint(t    bessel_j(v, 2 sqrt(a) sqrt(t)) exp(- p t), t)
+                         - 3
+                         ───
+               2 c z      2    c z
+integrate((b %e      + a)    %e   , z)
 
 
 Result:
- v - 1   - a/p                               a
-p      %e      v gamma_incomplete_lower(v, - ─)
-                                             p
-───────────────────────────────────────────────
-                v  v/2
-           (- 1)  a    gamma(v + 1)
+            2 c z
+     sqrt(%e     )
+───────────────────────
+             2 c z
+a c sqrt(b %e      + a)
 
 This differed from the expected result:
- v - 1   - a/p                             - a
-p      %e      v gamma_incomplete_lower(v, ───)
-                                            p
-───────────────────────────────────────────────
-            v/2      v
-           a    (- 1)  gamma(v + 1)
+           c z
+         %e
+───────────────────────
+             2 c z
+a c sqrt(b %e      + a)
 
 ~~~
-The file `rtest_great` test the function `great`. There is another test file (`rtest_shame`) of serious bugs that I have collected.
+The file `rtest_great` tests the function `great`. There is another test file (`rtest_shame`) of serious bugs that I have collected.
 
 Running the testsuite calls `ordmexpt` about 2.9 million times, so we need to be
 concerned with its efficiency. In addition to fixing bug #4383, the modified `ordmexpt` function fixes two testsuite failures-they are `rtest1`, #183 and `rtest_limit_extra` #259; the limit bug is  
