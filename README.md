@@ -60,6 +60,18 @@ ind
 
 ... Which was correct, but was expected to be wrong due to a known bug in Maxima or SBCL.
 ~~~
-This bug fix is *not* related to the extra simplifications in `approx-alike`.
+This bug fix is *not* related to the extra simplifications in `approx-alike`. Another bug that
+this code fixes is (see [#4455 'great' errors](https://sourceforge.net/p/maxima/bugs/4455/))
+
+~~~
+(%i2)	t^c + sqrt(t^c) + 42;
+(%o2)	t^c+sqrt(t^c)+42
+
+(%i3)	expand(%,0,0);
+(%o3)	sqrt(t^c)+t^c+42
+
+(%i4)	expand(%,0,0);
+(%o4)	t^c+sqrt(t^c)+42
+~~~
 
 
