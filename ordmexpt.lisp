@@ -2,10 +2,17 @@
    pass. This version of approx-alike is only intended to help with development of this code,
    it is not intended to be a replacement.
 
-   Testing with SBCL and the hacked approx-alike function gives 28 failures
+   Testing with SBCL and the hacked approx-alike function gives 31 failures
    and ten successes. Some (likely most) of the ten unexpected successes are 
    due to the hacked approx-alike that allows a test to pass even when Maxima 
-   returns an unsimplified result. 
+   returns an unsimplified result.  Plus, this code causes one testsuite asksign.
+
+   Of these failures, these tests are definitely bugs:
+
+      rtest_integrate.mac problems: 176 177 178 179
+  
+  The other failures are possibly non-bugs, just different representations, but sorting
+  this requires some effort.
 
 Error summary:
 Error(s) found:
