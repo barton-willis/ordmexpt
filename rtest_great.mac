@@ -1,31 +1,32 @@
-/* Some tests taken from #4383 great not transitive (so simplifya not idempotent) */
-
-(kill(all), 0);
+/* These tests take a long time to run, and I'm not sure they are a through test of 'great'. But
+   these tests do catch lots of bugs in 'great'. 
+   
+   Some tests taken from #4383 great not transitive (so simplifya not idempotent) */
+(timer(?great, ?ordmexpt, ?ordlist, ?ordfna),thyme : absolute_real_time(), 0)$
 0$
+
 
 (L : [2/3, -1/8,%i, %pi, inf, und, minf, a,b,-a,-b, a[1], z[a], rat(x), rat(a+b), exp(x),exp(-x),1/a,1/b,-1/a, -1/b,a/b, %pi, 
     x^2, x^%pi, %pi^x, 2^(2/3),sqrt(exp(z)),exp(z),cos(x),tan(x),sin(x), diff(x),
     a+b,c/d, cos(z), box(a,42), box(-a,42),true, false, a*b, a+b+c,a=b, a>b,f(a,b,a),
-    'diff(f,x), 'integrate(g(x),x), [],[false], [[]],a.b, a^^7, b^^z],0);
+    'diff(f,x), 'integrate(g(x),x), [],[false], [[]],a.b, a^^7, b^^z, block([fpprec : 15], 1.0),
+    block([fpprec : 18], 1.0), 2.3, 5.8*%i],0);
 0$
 
-(F(L) := block([a,b,c,p1,p2,p3,p4,p5,p6,ok,fail : []],
+/* To look at failures, return `fail`, not `length(fail)` */
+(F(L) := block([a,b,c,ok,fail : []],
  for a in L do (
   for b in L do (
      for c in L do (
-            p1 : sort([a,b,c]), 
-            p2 : sort([c,a,b]), 
-            p3 : sort([b,c,a]), 
-            p4 : sort([b,a,c]), 
-            p5 : sort([c,b,a]), 
-            p6 : sort([a,c,b]),
-            ok :  is(p1=p2) and is(p2=p3) and is(p3=p4) and is(p5=p6),
-            if not ok then push([a,b,c], fail)))),
+            ok : cardinality(map('sort, permutations([a,b,c]))),
+            if ok # 1 then push([a,b,c], fail)))),
      length(fail)),0);
 0$
 
+
 F(L);
 0$
+
 
 F(append(L, map('exp,L)));
 0$
@@ -36,11 +37,14 @@ F(append(L, map('exp,L)));
 (L : [2/3, -1/8,%i, %pi, inf, und, minf, a,b,-a,-b, a[1], z[a], rat(x), rat(a+b), exp(x),exp(-x),1/a,1/b,-1/a, -1/b,a/b, %pi, 
     x^2, x^%pi, %pi^x, 2^(2/3),sqrt(exp(z)),exp(z),cos(x),tan(x),sin(x), diff(x),
     a+b,c/d, cos(z), box(a,42), box(-a,42),true, false, a*b, a+b+c,a=b, a>b,f(a,b,a),
-    'diff(f,x), 'integrate(g(x),x), [],[false], [[]],a.b, a^^7, b^^z],0);
+    'diff(f,x), 'integrate(g(x),x), [],[false], [[]],a.b, a^^7, b^^z,block([fpprec : 15], 3.0),
+    block([fpprec : 18], 3.0), 2.3, 5.8*%i],0);
 0$
+
 
 F(L);
 0$
+
 
 F(append(L, map('exp,L)));
 0$
@@ -77,8 +81,56 @@ block([ok : true],
   ok);
 true$
 
+/* #365 orderlessp not transitive */
+
+(l: [z+x*(x+2)+v+1,z+x^2+x+v+1,z+(x+1)^2+v],0);
+0$
+
+orderlessp(l[1],l[2]);
+true$
+
+orderlessp(l[2],l[3]);
+true$
+
+orderlessp(l[1],l[3]);
+true$
+
+(remvalue(l),0);
+0$
+
+(LL : sort([-(1/c^%pi),-(1/(1/c)^%pi),b*c]),0);
+0$
+
+orderlessp(first(LL), second(LL));
+true$
+
+orderlessp(second(LL), third(LL));
+true$
+
+orderlessp(first(LL), third(LL));
+true$
+
+(remvalue(LL),0);
+0$
+
+/* #3072 orderlessp/great not transitive (2) */
+
+cardinality(map('sort, permutations([A(w*(x-1)), x, A(x-1)])));
+1$
+
+/* #4484 more 'great' bugs */
+
+block([domain : 'complex], cardinality(map(sort, permutations([a[1],a,exp(a[1])]))));
+1$
+
+block([domain : 'real], cardinality(map(sort, permutations([%e^(a . b),a^^7,a*b]))));
+1$
+
+(print(absolute_real_time()-thyme," seconds"),0);
+0$
+
 /* Did we make a mess? Let's clean it up!*/
-(remvalue(L),remfun(F),remvalue(bad),0);
+(remvalue(L),remvalue(thyme), remfun(F),remvalue(bad),0);
 0$
 
 values;
@@ -89,5 +141,9 @@ values;
 
 contexts;
 [initial, global]$
+
+
+ (print(timer_info()),0);
+ 0$
 
 

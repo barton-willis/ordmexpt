@@ -12,7 +12,7 @@
       rtest_integrate.mac problems: 176 177 178 179
   
   The other failures are possibly non-bugs, just different representations, but sorting
-  this requires some effort.
+  through all the details this requires some effort.
 
 Error summary:
 Error(s) found:
@@ -36,12 +36,63 @@ Tests that were expected to fail but passed:
   rtest_raddenest.mac problem:    (123)
 31 tests failed out of 18,957 total tests.
 
+Running rtest_great: with ordmext:
 
+run time = 857 seconds
+
+
+Result:
+┌                                                                         ┐
+│ function          time/call            calls        runtime      gctime │
+│                                                                         │
+│  ordfna   2.580022230505113e-6 sec   119730073   308.90625 sec     0    │
+│                                                                         │
+│ ordlist   5.653900768738337e-6 sec   52168076   294.953125 sec     0    │
+│                                                                         │
+│ ordmexpt  2.7915021420842554e-6 sec  91930791     256.625 sec      0    │
+│                                                                         │
+│  great    3.8143884614362095e-6 sec  343231625  1309.21875 sec     0    │
+│                                                                         │
+│  total    3.5741131117617567e-6 sec  607060565  2169.703125 sec    0    │
+└                                                                         ┘
+0
+
+... Which was correct.
+36/36 tests passed
+
+
+Without ordmexpt:
+
+Run time: 2937  seconds
+
+
+Result:
+┌                                                                         ┐
+│ function          time/call            calls        runtime      gctime │
+│                                                                         │
+│  ordfna   2.7810851717007135e-6 sec  186612183  518.984375 sec     0    │
+│                                                                         │
+│ ordlist   7.769806810122027e-6 sec   69214237    537.78125 sec     0    │
+│                                                                         │
+│ ordmexpt  8.107927082160264e-6 sec   68401423    554.59375 sec     0    │
+│                                                                         │
+│  great    4.865189816205777e-6 sec   470966979  2291.34375 sec     0    │
+│                                                                         │
+│  total    4.907857819275388e-6 sec   795194822  3902.703125 sec    0    │
+└                                                                         ┘
+0
+
+... Which was correct.
+
+28/36 tests passed
+
+The following 8 problems failed: (5 9 12 15 17 26 29 30)
 |#
 
 ;($load "constant_subexpressions.lisp")
-($load "approx-alike.lisp")
+;($load "approx-alike.lisp")
 ;($load "nrat4.lisp")
+
 ;; This function is no longer used.
 (defun my-constantp (e &optional (constants *builtin-numeric-constants*))
  "Return t iff every leaf of Maxima expression `e` is either a number, 
@@ -59,10 +110,10 @@ Tests that were expected to fail but passed:
   or may not be a `mexpt` expression and `y` is *not* an `mplus` or `mtimes` 
   expression."
   ;; Decompose both x & y as x = base-x^exp-x & y = base-y^exp-y. The input x is 
-  ;; required to be an mexpt expression, but y need not be an mexpt expression.
+  ;; required to be a mexpt expression, but y need not be a mexpt expression.
   (let ((base-x (second x)) (exp-x (third x)) (base-y) (exp-y))
     (if (mexptp y)
-      (setq base-y (second y)
+       (setq base-y (second y)
             exp-y (third y))
        (setq base-y y
             exp-y 1))
@@ -147,24 +198,4 @@ Tests that were expected to fail but passed:
    ((eq e a))
    
    (t (great e a))))
-
-  
- (defun tlimit-taylor (e x pt n &optional (d 0))
-	(let ((ee) 
-	      (silent-taylor-flag t) 
-	      ($taylordepth 8)
-		  ($radexpand nil)
-		  ($taylor_logexpand t)
-		  ($logexpand t))
-	    (setq ee 
-		   (ratdisrep (catch 'taylor-catch
-		                  (if (eq pt '$inf)      
-				              ($taylor e (ftake 'mlist x pt n '$asym))
-				              ($taylor e x pt n)))))
-		
-		(cond ((and ee (not (alike1 ee 0))) ee)
-			  ;; Retry if taylor returns zero and depth is less than 16
-              ((and ee (< d 16))
-			    (tlimit-taylor e x pt (* 4 (max 1 n)) (1+ d)))
-			  (t nil))))
 
