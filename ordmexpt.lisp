@@ -13,33 +13,41 @@
   
   The other failures are possibly non-bugs, just different representations, but sorting
   through all the details this requires some effort.
-
 Error summary:
 Error(s) found:
-  rtest16.mac problem:    (21)
-  rtest3.mac problems:    (67 68 69 74)
-  rtest_gamma.mac problems:    (384 390)
-  rtest_integrate.mac problems:    (176 177 178 179 360 362 372 374 441 456 
-    525 526 527 528 529 530 534 535 537 538)
-  rtest_trace.mac problems:    (87 88)
-  rtest_to_poly_solve.mac problems:    (166 216)
+   tests/rtest16.mac problems:    (21 780)
+   tests/rtest3.mac problems:    (67 68 69 74)
+   tests/rtest_gamma.mac problems:    (384 390)
+   tests/rtest_integrate.mac problems:
+    (176 177 178 179 360 362 372 374 441 456 525 526 527 528 529 530 534 535 537 538)
+   tests/rtest_trace.mac problems:    (87 88)
+   share/to_poly_solve/rtest_to_poly_solve.mac problems:    (166 216)
 
-Tests that were expected to fail but passed:
-  rtest1.mac problem:    (183)
-  rtest16.mac problems:    (525 526)
-  rtestsum.mac problem:    (95)
-  rtest_limit_extra.mac problem:    (259)
-  rtest_hg.mac problem:    (87)
-  rtest_fourier_elim.mac problem:    (149)
-  rtest_romberg.mac problem:    (18)
-  rtest_to_poly_solve.mac problem:    (322)
-  rtest_raddenest.mac problem:    (123)
-31 tests failed out of 18,957 total tests.
+Tests that were expected to fail but passed:   
+tests/rtest1.mac problems:    (183 186)
+   tests/rtest16.mac problems:    (525 526)
+   tests/rtest_limit_extra.mac problem:    (259)
+   tests/rtest_hg.mac problem:    (87)
+   share/fourier_elim/rtest_fourier_elim.mac problem:    (149)
+   share/numeric/rtest_romberg.mac problem:    (18)
+   share/to_poly_solve/rtest_to_poly_solve.mac problem:    (322)
+   share/raddenest/rtest_raddenest.mac problem:    (123)
+32 tests failed out of 19,008 total tests.
+
+Evaluation took:
+  948.949 seconds of real time
+  844.343750 seconds of total run time (550.406250 user, 293.937500 system)
+  [ Real times consist of 20.912 seconds GC time, and 928.037 seconds non-GC time. ]
+  [ Run times consist of 21.359 seconds GC time, and 822.985 seconds non-GC time. ]
+  88.98% CPU
+  370,080 forms interpreted
+  370,750 lambdas converted
+  1,894,291,751,112 processor cycles
+  125,366,854,496 bytes consed
 
 Running rtest_great: with ordmext:
 
 run time = 857 seconds
-
 
 Result:
 ┌                                                                         ┐
@@ -94,6 +102,7 @@ The following 8 problems failed: (5 9 12 15 17 26 29 30)
 ;($load "nrat4.lisp")
 
 ;; This function is no longer used.
+#| 
 (defun my-constantp (e &optional (constants *builtin-numeric-constants*))
  "Return t iff every leaf of Maxima expression `e` is either a number, 
   a declared system constant, or in the CL list `constants`."
@@ -102,6 +111,7 @@ The following 8 problems failed: (5 9 12 15 17 26 29 30)
           (and (symbolp e) (get e 'sysconst)) ;catches nil, true, and $%i for example
           (member e constants :test #'eq))
       (every #'my-constantp (margs e))))
+|#
 
 ;; Return great(x,y), where x is an `mexpt` expression and y is any Maxima
 ;; expression. 
@@ -154,7 +164,7 @@ The following 8 problems failed: (5 9 12 15 17 26 29 30)
       (cond 
        ;; Case when a is null
        ((null a) 
-        (throw 'terminate (great ida (car b))))
+         (throw 'terminate (great ida (if (null b) idb (car b)))))
        ;; Case when b is null
        ((null b) 
         (throw 'terminate (great (car a) idb)))
@@ -173,6 +183,7 @@ The following 8 problems failed: (5 9 12 15 17 26 29 30)
     (or (not (eq (caar e) 'rat))
         (> (cadr e) (* (caddr e) a))))
    
+   ;; I am not sure about the (constant a)?
    ((and (constant a) (not (member (caar e) '(mplus mtimes mexpt))))
     (not (member (caar e) '(rat bigfloat))))
    
