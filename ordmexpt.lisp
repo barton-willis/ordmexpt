@@ -7,94 +7,7 @@
    due to the hacked approx-alike that allows a test to pass even when Maxima 
    returns an unsimplified result.  Plus, this code causes one testsuite asksign.
 
-   Of these failures, these tests are definitely bugs:
-
-      rtest_integrate.mac problems: 176 177 178 179
   
-  The other failures are possibly non-bugs, just different representations, but sorting
-  through all the details this requires some effort.
-Error summary:
-Error(s) found:
-   tests/rtest16.mac problems:    (21 780)
-   tests/rtest3.mac problems:    (67 68 69 74)
-   tests/rtest_gamma.mac problems:    (384 390)
-   tests/rtest_integrate.mac problems:
-    (176 177 178 179 360 362 372 374 441 456 525 526 527 528 529 530 534 535 537 538)
-   tests/rtest_trace.mac problems:    (87 88)
-   share/to_poly_solve/rtest_to_poly_solve.mac problems:    (166 216)
-
-Tests that were expected to fail but passed:   
-tests/rtest1.mac problems:    (183 186)
-   tests/rtest16.mac problems:    (525 526)
-   tests/rtest_limit_extra.mac problem:    (259)
-   tests/rtest_hg.mac problem:    (87)
-   share/fourier_elim/rtest_fourier_elim.mac problem:    (149)
-   share/numeric/rtest_romberg.mac problem:    (18)
-   share/to_poly_solve/rtest_to_poly_solve.mac problem:    (322)
-   share/raddenest/rtest_raddenest.mac problem:    (123)
-32 tests failed out of 19,008 total tests.
-
-Evaluation took:
-  948.949 seconds of real time
-  844.343750 seconds of total run time (550.406250 user, 293.937500 system)
-  [ Real times consist of 20.912 seconds GC time, and 928.037 seconds non-GC time. ]
-  [ Run times consist of 21.359 seconds GC time, and 822.985 seconds non-GC time. ]
-  88.98% CPU
-  370,080 forms interpreted
-  370,750 lambdas converted
-  1,894,291,751,112 processor cycles
-  125,366,854,496 bytes consed
-
-Running rtest_great: with ordmext:
-
-run time = 857 seconds
-
-Result:
-┌                                                                         ┐
-│ function          time/call            calls        runtime      gctime │
-│                                                                         │
-│  ordfna   2.580022230505113e-6 sec   119730073   308.90625 sec     0    │
-│                                                                         │
-│ ordlist   5.653900768738337e-6 sec   52168076   294.953125 sec     0    │
-│                                                                         │
-│ ordmexpt  2.7915021420842554e-6 sec  91930791     256.625 sec      0    │
-│                                                                         │
-│  great    3.8143884614362095e-6 sec  343231625  1309.21875 sec     0    │
-│                                                                         │
-│  total    3.5741131117617567e-6 sec  607060565  2169.703125 sec    0    │
-└                                                                         ┘
-0
-
-... Which was correct.
-36/36 tests passed
-
-
-Without ordmexpt:
-
-Run time: 2937  seconds
-
-
-Result:
-┌                                                                         ┐
-│ function          time/call            calls        runtime      gctime │
-│                                                                         │
-│  ordfna   2.7810851717007135e-6 sec  186612183  518.984375 sec     0    │
-│                                                                         │
-│ ordlist   7.769806810122027e-6 sec   69214237    537.78125 sec     0    │
-│                                                                         │
-│ ordmexpt  8.107927082160264e-6 sec   68401423    554.59375 sec     0    │
-│                                                                         │
-│  great    4.865189816205777e-6 sec   470966979  2291.34375 sec     0    │
-│                                                                         │
-│  total    4.907857819275388e-6 sec   795194822  3902.703125 sec    0    │
-└                                                                         ┘
-0
-
-... Which was correct.
-
-28/36 tests passed
-
-The following 8 problems failed: (5 9 12 15 17 26 29 30)
 |#
 
 ;($load "constant_subexpressions.lisp")
@@ -131,17 +44,15 @@ The following 8 problems failed: (5 9 12 15 17 26 29 30)
       ;; bases are alike; compare exponents
       ((alike1 base-x base-y)
        (great exp-x exp-y))
-      
       ;; make %e^X > a^Y and %e^X > a when a =/= %e.
-      ((and (eq base-x '$%e) (not (eq base-y '$%e))) t)
-      ((and (eq base-y '$%e) (not (eq base-x '$%e))) nil)
+      ;((and (eq base-x '$%e) (not (eq base-y '$%e))) t)
+      ;((and (eq base-y '$%e) (not (eq base-x '$%e))) nil)
 
       ;; default: comparison between bases
       (t (great base-x base-y)))))
 
 ;; Arguably, this version of `ordlist` is more tidy than is the standard version.
-;; But this version (i) fixes no bugs (ii) is no more efficient. Thus, I'm not
-;; proposing that this code replace the current `ordlist`.
+;; And I have evidence that it is more efficient than the standard version.
 
 ;; Using 'great', compare the CL lists a and b element wise in reverse order. 
 ;; For unequal list lengths, the arguments ida and idb give default values
@@ -175,7 +86,7 @@ The following 8 problems failed: (5 9 12 15 17 26 29 30)
        ;; Default case: compare heads of a and b
        (t (throw 'terminate (great (car a) (car b))))))))
 
-(defun ordfna (e a)  ; A is an atom
+(defun ordfna-xxx (e a)  ; A is an atom
   "Subroutine to function 'great'. Requires `e` to be a Maxima expression and `a` 
    to be an atom."
   (cond
@@ -210,3 +121,27 @@ The following 8 problems failed: (5 9 12 15 17 26 29 30)
    
    (t (great e a))))
 
+;; An effort to simplify the logic of ordfna
+(defun ordfna (e a)  
+  "Subroutine to function 'great'. Requires `e` to be a Maxima expression and `a` 
+   to be an atom."
+  (cond ((mexptp e) 
+           (ordmexpt e a))
+        ((mnump a)
+           (if (mnump e) (eq t (mgrp e a)) t))
+        ((member (caar e) '(mplus mtimes))
+           (ordlist (cdr e) (list a) (caar e) (caar e)))
+      
+        (t t)))
+
+;; This fix is needed for integrate(exp(acsc(x)),x) with domain : complex. Thanks to David Scherfgen
+;; for finding and fixing this bug.
+(defun islinear (expr var1)
+  (let ((a (let ((*islinp* t))
+             (sdiff expr var1))))
+    (if (freeof var1 a)
+      (let ((b (no-err-sub-var 0 expr var1)))
+       (if (eq b t) nil
+        (cons a (maxima-substitute 0 var1 expr)))))))
+ 
+ 
