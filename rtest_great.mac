@@ -5,6 +5,12 @@
 (timer(?great, ?ordmexpt, ?ordlist, ?ordfna),thyme : absolute_real_time(), 0)$
 0$
 
+(L : [exp(-a/p),v,1/gamma(v+1)],0);
+0$
+
+is(equal(sort(L) , sort(reverse(L))));
+true$
+
 
 (L : [2/3, -1/8,%i, %pi, inf, und, minf, a,b,-a,-b, a[1], z[a], rat(x), rat(a+b), exp(x),exp(-x),1/a,1/b,-1/a, -1/b,a/b, %pi, 
     x^2, x^%pi, %pi^x, 2^(2/3),sqrt(exp(z)),exp(z),cos(x),tan(x),sin(x), diff(x),

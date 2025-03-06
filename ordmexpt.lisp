@@ -7,7 +7,81 @@
    due to the hacked approx-alike that allows a test to pass even when Maxima 
    returns an unsimplified result.  Plus, this code causes one testsuite asksign.
 
-  
+Result from rtest_great:
+┌                                                                         ┐
+│ function          time/call            calls        runtime      gctime │
+│                                                                         │
+│  ordfna   2.6089600879452177e-6 sec  135153227  352.609375 sec     0    │
+│                                                                         │
+│ ordlist   6.052684462470317e-6 sec   52190169   315.890625 sec     0    │
+│                                                                         │
+│ ordmexpt  3.7398180794529003e-6 sec  92430131   345.671875 sec     0    │
+│                                                                         │
+│  great    3.9013668574613305e-6 sec  377027316  1470.921875 sec    0    │
+│                                                                         │
+│  total    3.7836336181438184e-6 sec  656800843  2485.09375 sec     0    │
+└                                                                         ┘
+
+... Which was correct.
+38/38 tests passed  
+
+Without ordmexpt:
+
+Result:
+┌                                                                        ┐
+│ function         time/call            calls        runtime      gctime │
+│                                                                        │
+│  ordfna   2.816167760010712e-6 sec  186612196   525.53125 sec     0    │
+│                                                                        │
+│ ordlist   8.02527012099124e-6 sec   69133187    554.8125 sec      0    │
+│                                                                        │
+│ ordmexpt  8.384556558806245e-6 sec  68401426   573.515625 sec     0    │
+│                                                                        │
+│  great    4.959178382098201e-6 sec  470967002  2335.609375 sec    0    │
+│                                                                        │
+│  total    5.017481390472288e-6 sec  795113811  3989.46875 sec     0    │
+└                                                                        ┘
+0
+
+... Which was correct.
+
+30/38 tests passed
+
+The following 8 problems failed: (7 11 14 17 19 28 31 32)
+
+
+Running the full testsuite with ordmexpt and approx-alike
+
+Error summary:
+Error(s) found:
+   rtest1.mac problem:    (185)
+   rtest6b.mac problems:    (11 12)
+   rtest7.mac problems:    (13 27 28 29)
+   rtest9a.mac problem:    (12)
+   rtest15.mac problem:    (7)
+   rtest16.mac problems:    (21 780)
+   rtestode.mac problem:    (86)
+   rtest3.mac problems:    (180 182)
+   rexamples.mac problem:    (122)
+   rtest_allnummod.mac problems:    (397 398)
+   rtest_integrate.mac problems:  (47 50 53 56 59 62 76 135 136 137 138 320 322 346 348 439 550)
+   rtest_limit.mac problem:    (197)
+   rtest_limit_extra.mac problems:    (116 260 336 337 338 339 343 347)
+   rtest_unicode_display.mac problems:    (11 13)
+   contrib/diffequations/rtest_odelin.mac problem:    (22)
+   fourier_elim/rtest_fourier_elim.mac problems:    (104 110)
+   contrib/bitwise/rtest_bitwise.mac problem:    (42)
+   to_poly_solve/rtest_to_poly_solve.mac problems:    (166 216 313)
+   vector/rtest_vect.mac problem:    (19)
+
+Tests that were expected to fail but passed:
+   rtest1.mac problem:    (183)
+   rtest_limit_extra.mac problems:    (259 261)
+   fourier_elim/rtest_fourier_elim.mac problem:    (149)
+   numeric/rtest_romberg.mac problem:    (18)
+   to_poly_solve/rtest_to_poly_solve.mac problem:    (322)
+   raddenest/rtest_raddenest.mac problem:    (123)
+53 tests failed out of 19,027 total tests.
 |#
 
 ;($load "constant_subexpressions.lisp")
@@ -86,7 +160,7 @@
        ;; Default case: compare heads of a and b
        (t (throw 'terminate (great (car a) (car b))))))))
 
-(defun ordfna-xxx (e a)  ; A is an atom
+(defun ordfna (e a)  ; A is an atom
   "Subroutine to function 'great'. Requires `e` to be a Maxima expression and `a` 
    to be an atom."
   (cond
@@ -121,6 +195,8 @@
    
    (t (great e a))))
 
+#|  This version causes some failures running rtest_great
+
 ;; An effort to simplify the logic of ordfna
 (defun ordfna (e a)  
   "Subroutine to function 'great'. Requires `e` to be a Maxima expression and `a` 
@@ -133,7 +209,7 @@
            (ordlist (cdr e) (list a) (caar e) (caar e)))
       
         (t t)))
-
+|#
 ;; This fix is needed for integrate(exp(acsc(x)),x) with domain : complex. Thanks to David Scherfgen
 ;; for finding and fixing this bug.
 (defun islinear (expr var1)
