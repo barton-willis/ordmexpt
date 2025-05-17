@@ -1,91 +1,60 @@
 #| The hacked approx-alike function attempts to allow some purely syntactic test failures to 
    pass. This version of approx-alike is only intended to help with development of this code,
-   it is not intended to be a replacement.
+   it is not intended to be a replacement for approx-alike.
 
-   Testing with SBCL and the hacked approx-alike function gives 31 failures
-   and ten successes. Some (likely most) of the ten unexpected successes are 
-   due to the hacked approx-alike that allows a test to pass even when Maxima 
-   returns an unsimplified result.  Plus, this code causes one testsuite asksign.
+Error(s) found:
+  rtest16.mac problems:    (21 780)
+  rtest3.mac problems:    (67 68 69 74)
+  rtest_integrate.mac problems:    (360 362 372 374 441 456 525 526 527 528 529 530 534 535 537 538)
+  rtest_trace.mac problems:    (87 88)
+  rtest_to_poly_solve.mac problems:  (166 216)
+Tests that were expected to fail but passed:
+  rtest1.mac problems:   (183 186)
+  rtest_limit_extra.mac problem:  (259)
+  rtest_fourier_elim.mac problem:  (149)
+  rtest_romberg.mac problem:  (18)
+  rtest_to_poly_solve.mac problem:  (322)
+  rtest_raddenest.mac problem: (123)
+26 tests failed out of 19,154 total tests.
 
-Result from rtest_great:
+All test in rtest_great pass: timings:
 ┌                                                                         ┐
 │ function          time/call            calls        runtime      gctime │
 │                                                                         │
-│  ordfna   2.6089600879452177e-6 sec  135153227  352.609375 sec     0    │
+│  ordfna   2.402409067168569e-6 sec   119730078  287.640625 sec     0    │
 │                                                                         │
-│ ordlist   6.052684462470317e-6 sec   52190169   315.890625 sec     0    │
+│ ordlist   5.563747453519275e-6 sec   52168076     290.25 sec       0    │
 │                                                                         │
-│ ordmexpt  3.7398180794529003e-6 sec  92430131   345.671875 sec     0    │
+│ ordmexpt  2.6806849360904043e-6 sec  91930796    246.4375 sec      0    │
 │                                                                         │
-│  great    3.9013668574613305e-6 sec  377027316  1470.921875 sec    0    │
+│  great    3.653463862676877e-6 sec   343231635  1253.984375 sec    0    │
 │                                                                         │
-│  total    3.7836336181438184e-6 sec  656800843  2485.09375 sec     0    │
+│  total    3.423566858652172e-6 sec   607060585   2078.3125 sec     0    │
+└                                                                         ┘
+Standard Maxima--eight tests fail and
+
+┌                                                                         ┐
+│ function          time/call            calls        runtime      gctime │
+│                                                                         │
+│  ordfna   2.5787938050951397e-6 sec  186612196  481.234375 sec     0    │
+│                                                                         │
+│ ordlist   7.876779570425417e-6 sec   69133187   544.546875 sec     0    │
+│                                                                         │
+│ ordmexpt   8.37130756601478e-6 sec   68401426   572.609375 sec     0    │
+│                                                                         │
+│  great    4.813865653797971e-6 sec   470967002  2267.171875 sec    0    │
+│                                                                         │
+│  total    4.861646781280724e-6 sec   795113811   3865.5625 sec     0    │
 └                                                                         ┘
 
-... Which was correct.
-38/38 tests passed  
-
-Without ordmexpt:
-
-Result:
-┌                                                                        ┐
-│ function         time/call            calls        runtime      gctime │
-│                                                                        │
-│  ordfna   2.816167760010712e-6 sec  186612196   525.53125 sec     0    │
-│                                                                        │
-│ ordlist   8.02527012099124e-6 sec   69133187    554.8125 sec      0    │
-│                                                                        │
-│ ordmexpt  8.384556558806245e-6 sec  68401426   573.515625 sec     0    │
-│                                                                        │
-│  great    4.959178382098201e-6 sec  470967002  2335.609375 sec    0    │
-│                                                                        │
-│  total    5.017481390472288e-6 sec  795113811  3989.46875 sec     0    │
-└                                                                        ┘
-0
-
-... Which was correct.
-
-30/38 tests passed
-
-The following 8 problems failed: (7 11 14 17 19 28 31 32)
-
-
-Running the full testsuite with ordmexpt and approx-alike
-
-Error summary:
-Error(s) found:
-   rtest1.mac problem:    (185)
-   rtest6b.mac problems:    (11 12)
-   rtest7.mac problems:    (13 27 28 29)
-   rtest9a.mac problem:    (12)
-   rtest15.mac problem:    (7)
-   rtest16.mac problems:    (21 780)
-   rtestode.mac problem:    (86)
-   rtest3.mac problems:    (180 182)
-   rexamples.mac problem:    (122)
-   rtest_allnummod.mac problems:    (397 398)
-   rtest_integrate.mac problems:  (47 50 53 56 59 62 76 135 136 137 138 320 322 346 348 439 550)
-   rtest_limit.mac problem:    (197)
-   rtest_limit_extra.mac problems:    (116 260 336 337 338 339 343 347)
-   rtest_unicode_display.mac problems:    (11 13)
-   contrib/diffequations/rtest_odelin.mac problem:    (22)
-   fourier_elim/rtest_fourier_elim.mac problems:    (104 110)
-   contrib/bitwise/rtest_bitwise.mac problem:    (42)
-   to_poly_solve/rtest_to_poly_solve.mac problems:    (166 216 313)
-   vector/rtest_vect.mac problem:    (19)
-
-Tests that were expected to fail but passed:
-   rtest1.mac problem:    (183)
-   rtest_limit_extra.mac problems:    (259 261)
-   fourier_elim/rtest_fourier_elim.mac problem:    (149)
-   numeric/rtest_romberg.mac problem:    (18)
-   to_poly_solve/rtest_to_poly_solve.mac problem:    (322)
-   raddenest/rtest_raddenest.mac problem:    (123)
-53 tests failed out of 19,027 total tests.
+Possibly, my ordlist function is a bit faster
 |#
 
 ;($load "constant_subexpressions.lisp")
-;($load "approx-alike.lisp")
+($load "approx-alike.lisp")
+($load "tlimit.lisp")
+($load "limit.lisp")
+($load "sin.lisp")
 ;($load "nrat4.lisp")
 
 ;; This function is no longer used.

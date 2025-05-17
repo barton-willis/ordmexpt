@@ -3,12 +3,12 @@
 0$
 
 ode2(y * 'diff(y,x,2) = a,y,x);
-[(sqrt(%pi)*%i*%e^-%k1*erf((%i*sqrt(a*log(y)+%k1*a))/sqrt(a)))
-        /(sqrt(2)*sqrt(a))
-         = x+%k2,
-       -((sqrt(%pi)*%i*%e^-%k1*erf((%i*sqrt(a*log(y)+%k1*a))/sqrt(a)))
-        /(sqrt(2)*sqrt(a)))
-         = x+%k2]$
+[(%i*sqrt(%pi)*erf((%i*sqrt(a*log(y)+%k1*a))/sqrt(a))*%e^-%k1)
+  /(sqrt(2)*sqrt(a))
+   = x+%k2,
+ -((%i*sqrt(%pi)*erf((%i*sqrt(a*log(y)+%k1*a))/sqrt(a))*%e^-%k1)
+  /(sqrt(2)*sqrt(a)))
+   = x+%k2]$
          
 expand(integrate(exp(2*%i*x)/(3+exp(%i*x)),x,0,2*%pi));
 0$
@@ -57,3 +57,39 @@ b*asinh((2*a*%e^(d*x)+b)/sqrt(4*a*c-b^2))/(2*sqrt(a)*d)
 
  (forget(a>0,b>0,c>0,4*a*c>b^2),0);
  0$
+
+ integrate(log(cot(x)-1),x,0,%pi/4);
+-((%i*li[2]((1-%i)/2))/2)+(%i*li[2](-((-%i-1)/2)))/2
+                               +((4*%pi*log(2)+%i*%pi^2+16*%catalan)/4
+                                +(4*%pi*log(2)-%i*%pi^2+16*%catalan)/4
+                                -2*%pi*log(2))
+                                /8$
+
+integrate(log(cos(x)),x,0,%pi/2);
+(%i*%pi^2)/24-(2*%pi*log(4)+(%i*%pi^2)/3)/8$
+
+limit((1+sqrt(n+1))^(-n-1)/(1+sqrt(n))^(-n),n,inf);
+ 0$
+
+ (xxx : x*log(1/tan(x)-1)-(2*x*log((tan(x)^2-2*tan(x)+1)/2)+(%pi-2*atan2((tan(x)-1)/2,-((tan(x)-1)/2)))*
+log(tan(x)^2+1)+2*%i*li[2](-((%i*((%i+1)*tan(x)+%i-1))/2))+2*%i*li[2](%i*tan(x)+1)-2*%i*li[2](1-%i*tan(x))
+-2*%i*li[2](-((%i*((%i-1)*tan(x)+%i+1))/2))-4*x*log(tan(x)))/4, 0);
+0$
+
+limit(xxx,x,%pi/4,'minus);
+(4*%i*log(2)*log(sqrt(2)*%i+sqrt(2))
+ -4*%i*log(2)^2
+ +((4*%i+4)*%pi*log(2)+(1-%i)*%pi^2+16*%catalan*%i+16*%catalan)/(4*%i+4)
+ +((4*%i-4)*%pi*log(2)+(-%i-1)*%pi^2+16*%catalan*%i-16*%catalan)/(4*%i-4)
+ -%pi*log(2))
+ /8$
+
+ limit(xxx,x,%pi/4,'plus);
+-((4*%i*log(2)*log(sqrt(2)*%i-sqrt(2))
+ -4*%i*log(2)^2
+ -(((4*%i+4)*%pi*log(2)+(1-%i)*%pi^2+16*%catalan*%i+16*%catalan)/(4*%i+4))
+ -(((4*%i-4)*%pi*log(2)+(-%i-1)*%pi^2+16*%catalan*%i-16*%catalan)/(4*%i-4))
+ -2*%pi*(log(2)+%i*%pi)+3*%pi*log(2))
+ /8)$
+
+ 
