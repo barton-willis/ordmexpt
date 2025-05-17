@@ -88,8 +88,8 @@ Possibly, my ordlist function is a bit faster
       ((alike1 base-x base-y)
        (great exp-x exp-y))
       ;; make %e^X > a^Y and %e^X > a when a =/= %e.
-      ;((and (eq base-x '$%e) (not (eq base-y '$%e))) t)
-      ;((and (eq base-y '$%e) (not (eq base-x '$%e))) nil)
+      ((and (eq base-x '$%e) (not (eq base-y '$%e))) t)
+      ((and (eq base-y '$%e) (not (eq base-x '$%e))) nil)
 
       ;; default: comparison between bases
       (t (great base-x base-y)))))

@@ -16,7 +16,7 @@ modified function `approx-alike` that applies several transformations
 to both the expected and actual outputs. This modified function is *not* 
 intended as a replacement to `approx-alike`. 
 
-The last I tried, my alternative `ordmexpt` function along with the modified function `approx-alike` runs the testsuite, including the share testsuite, with thirty-one unexpected failures. A typical failure is (test done with 'domain : 'complex')
+The last I tried, my alternative `ordmexpt` function along with the modified function `approx-alike` runs the testsuite, including the share testsuite, with twenty-six unexpected failures. A typical failure is (test done with 'domain : 'complex')
 ~~~
 ********************** Problem 537 (line 2960) ***************
 Input:
@@ -44,7 +44,7 @@ a c sqrt(b %e      + a)
 The file `rtest_great` tests the function `great`. There is another test file (`rtest_shame`) of serious bugs that I have collected.
 
 Running the testsuite calls `ordmexpt` about 2.9 million times, so we need to be
-concerned with its efficiency. In addition to fixing bug #4383, the modified `ordmexpt` function fixes two testsuite failures-they are `rtest1`, #183 and `rtest_limit_extra` #259; the limit bug is  
+concerned with its efficiency. In addition to fixing bug #4383, the modified `ordmexpt` function fixes two testsuite failures. These bugs are `rtest1`, #183 and `rtest_limit_extra` #259; the limit bug is  
 ~~~
 Running tests in rtest_limit_extra:
 ********************** Problem 259 (line 909) ***************
