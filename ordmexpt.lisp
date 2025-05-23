@@ -18,6 +18,7 @@ Tests that were expected to fail but passed:
 26 tests failed out of 19,154 total tests.
 
 All test in rtest_great pass: timings:
+
 ┌                                                                         ┐
 │ function          time/call            calls        runtime      gctime │
 │                                                                         │
@@ -47,7 +48,8 @@ Standard Maxima--eight tests fail and
 │  total    4.861646781280724e-6 sec   795113811   3865.5625 sec     0    │
 └                                                                         ┘
 
-Possibly, my ordlist function is a bit faster
+Possibly, my ordlist function is a bit faster than the standard, and plus it is called about
+17 million fewer times.
 |#
 
 ;($load "constant_subexpressions.lisp")
