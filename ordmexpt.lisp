@@ -165,22 +165,36 @@ Possibly, my ordlist function is a bit faster than the standard, and plus it is 
    ((eq e a))
    
    (t (great e a))))
+   
+#| 
+;; An attempt to clarify and simplify (at least to me) the logic of ordfna. This version of
+;; ordfna fails the rtest_great test.
+(defun ordfna-xxx (e a)  ; A is an atom
+  "Subroutine to function 'great'. Requires `e` to be a non atom and `a` to be an atom."
+  (cond
+   ((mnump e) ; either `e` is a rational number or a bigfloat
+    (if (mnump a) 
+          (eq t (mgrp e a)) ;both `e` & `a` are numbers, so compare using mgrp
+          nil)) ;`e` is a number and `a` is not, return nill (numbers before symbols)
 
-#|  This version causes some failures running rtest_great
+   (($subvarp e) t) ; subvarp > atom 
 
-;; An effort to simplify the logic of ordfna
-(defun ordfna (e a)  
-  "Subroutine to function 'great'. Requires `e` to be a Maxima expression and `a` 
-   to be an atom."
-  (cond ((mexptp e) 
-           (ordmexpt e a))
-        ((mnump a)
-           (if (mnump e) (eq t (mgrp e a)) t))
-        ((member (caar e) '(mplus mtimes))
-           (ordlist (cdr e) (list a) (caar e) (caar e)))
-      
-        (t t)))
-|#
+   ((mexptp e) (ordmexpt e a))
+
+   ((mplusp e)
+      (if (null (cdr e)) (great 0 a) (great (car (last e)) a)))
+
+   ((mtimesp e)
+      (if (null (cdr e)) (great 1 a) (great (car (last e)) a)))
+
+   ;((null (margs e)) nil)
+   
+   (t
+      (setq e (car (margs e))) 
+      (cond ((eq e a) t)
+            (t (great e a))))))
+
+
 ;; This fix is needed for integrate(exp(acsc(x)),x) with domain : complex. Thanks to David Scherfgen
 ;; for finding and fixing this bug.
 (defun islinear (expr var1)
@@ -191,4 +205,4 @@ Possibly, my ordlist function is a bit faster than the standard, and plus it is 
        (if (eq b t) nil
         (cons a (maxima-substitute 0 var1 expr)))))))
  
- 
+ |#
