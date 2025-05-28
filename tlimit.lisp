@@ -116,11 +116,9 @@
 ;; limit1 when Maxima is unable to find the Taylor polynomial. As a result, 
 ;; the last argument of taylim is now unused (orphaned).
 
-(defvar *tlimit* nil)
 (defun taylim (e var val flag)
 "Using a Taylor expansion, return `limit(e,var,val)`. The `flag` argument is not used."
   (declare (ignore flag))
-  (push (ftake 'mlist e var val) *tlimit*)
   (let ((et nil))
     (when (tlimp e var)
       (setq e (stirling0 e))
@@ -169,15 +167,19 @@ exponent `q` can be zero, so a term that is free of `x` is acceptable."
 
 (defvar *failed* nil)
 (defvar *oops* nil)
+
+(defun $jm (e x pt) 
+  (let ((*BEHAVIOR-COUNT-NOW* 0)) (limit-sum-of-powers e x pt)))
+
 (defun limit-sum-of-powers (e x pt)
-  "When `e` is a linear combination of terms of the form `x^Y`, where `Y` is free of `x`, return
-   limit(e,x,pt); otherwise, return nil."
-  (let ((ll nil) (pk nil) (ck nil) (sgn) ($radexpand t))
+  "When `e` is a linear combination of terms of the form `x^q`, where `q` is an explict rational number, return
+   limit(e,x,pt); otherwise, return nil. The limit point `pt` must be either `minf`, `zerob`, `zeroa`, `0`, or `in"
+  (let ((ee) (ll nil) (pk nil) (ck nil) (sgn) ($radexpand t))
     (setq e ($expand e))
     (cond
-      ((sum-of-powers-p ($expand e) x)
+      ((sum-of-powers-p e x)
        (cond
-         ((and (or (eq pt '$zeroa) (eq pt '$zerob)))
+         ((or (eq pt '$zeroa) (eq pt '$zerob) (eql pt 0))
           ;; Try direct substitution
           (let* (($errormsg nil) (ans (errcatch (maxima-substitute 0 x e))))
             (cond
@@ -199,16 +201,17 @@ exponent `q` can be zero, so a term that is free of `x` is acceptable."
                    ans)))))
 
          ((or (eq pt '$minf) (eq pt '$inf))
-          ;; Set e to a list of its additive terms
-          (setq e (if (mplusp e) (cdr e) (list e)))
-          ;; Replace each term ck*x^pk of the Taylor series by ck . pk
-          (dolist (ek e)
+          ;; Set ee to a list of the additive terms of e
+          (setq ee (if (mplusp e) (cdr e) (list e)))
+          ;; Replace each term ck*x^pk of the the list `ee` by ck . pk and push them in the list `ll`
+          (dolist (ek ee)
               (setq pk (sratsimp (mul x (div (sdiff ek x) ek))))
               (setq ck (sratsimp (div ek (ftake 'mexpt x pk))))
               (push (cons ck pk) ll))
-          ;; Sort terms and determine the highest power
+          ;; Sort the terms of `ll` and determine the highest power
           (setq ll (sort ll #'(lambda (a b) (eq t (mgrp a b))) :key #'cdr))
           (setq pk (cdr (first ll)))
+
           ;; Process leading coefficients
           (setq ll (mapcar #'(lambda (q) (if (eq t (meqp pk (cdr q))) (car q) 0)) ll))
           (setq ck (fapply 'mplus ll))
@@ -223,11 +226,14 @@ exponent `q` can be zero, so a term that is free of `x` is acceptable."
                ((eq sgn '$complex) '$infinity)
                (t nil)))
             ((eq t (mgrp 0 pk)) ;; Leading term is ck x^pk where pk < 0
+             (setq sgn (if *getsignl-asksign-ok* ($asksign ck) ($csign ck)))
              (cond
-               ((eq t (mgrp ck 0)) '$zeroa)
-               ((eq t (mgrp 0 ck)) '$zerob)
+               ((eq sgn '$neg) '$zerob)
+               ((eq sgn '$pos) '$zeroa)
                (t (zero-fixup e x pt))))
             (t nil))))) ;; Unexpected case
       (t 
-        (push (ftake 'mlist e x pt) *failed*)
+
+        (when (sum-of-powers-p e x) 
+           (push (ftake 'mlist e x pt) *failed*))
         nil))))
