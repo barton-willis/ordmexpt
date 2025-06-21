@@ -60,7 +60,7 @@ Possibly, my ordlist function is a bit faster than the standard, and plus it is 
 ;($load "nrat4.lisp")
 
 ;; This function is no longer used.
-#| 
+
 (defun my-constantp (e &optional (constants *builtin-numeric-constants*))
  "Return t iff every leaf of Maxima expression `e` is either a number, 
   a declared system constant, or in the CL list `constants`."
@@ -69,7 +69,7 @@ Possibly, my ordlist function is a bit faster than the standard, and plus it is 
           (and (symbolp e) (get e 'sysconst)) ;catches nil, true, and $%i for example
           (member e constants :test #'eq))
       (every #'my-constantp (margs e))))
-|#
+
 
 ;; Return great(x,y), where x is an `mexpt` expression and y is any Maxima
 ;; expression. 
@@ -90,8 +90,8 @@ Possibly, my ordlist function is a bit faster than the standard, and plus it is 
       ((alike1 base-x base-y)
        (great exp-x exp-y))
       ;; make %e^X > a^Y and %e^X > a when a =/= %e.
-      ((and (eq base-x '$%e) (not (eq base-y '$%e))) t)
-      ((and (eq base-y '$%e) (not (eq base-x '$%e))) nil)
+      ;((and (eq base-x '$%e) (not (eq base-y '$%e))) t)
+      ;((and (eq base-y '$%e) (not (eq base-x '$%e))) nil)
 
       ;; default: comparison between bases
       (t (great base-x base-y)))))
@@ -166,7 +166,7 @@ Possibly, my ordlist function is a bit faster than the standard, and plus it is 
    
    (t (great e a))))
    
-#| 
+
 ;; An attempt to clarify and simplify (at least to me) the logic of ordfna. This version of
 ;; ordfna fails the rtest_great test.
 (defun ordfna-xxx (e a)  ; A is an atom
@@ -187,14 +187,12 @@ Possibly, my ordlist function is a bit faster than the standard, and plus it is 
    ((mtimesp e)
       (if (null (cdr e)) (great 1 a) (great (car (last e)) a)))
 
-   ;((null (margs e)) nil)
-   
    (t
       (setq e (car (margs e))) 
       (cond ((eq e a) t)
             (t (great e a))))))
 
-
+#| 
 ;; This fix is needed for integrate(exp(acsc(x)),x) with domain : complex. Thanks to David Scherfgen
 ;; for finding and fixing this bug.
 (defun islinear (expr var1)
