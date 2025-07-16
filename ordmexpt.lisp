@@ -2,56 +2,8 @@
    pass. This version of approx-alike is only intended to help with development of this code,
    it is not intended to be a replacement for approx-alike.
 
-Error(s) found:
-  rtest16.mac problems:    (21 780)
-  rtest3.mac problems:    (67 68 69 74)
-  rtest_integrate.mac problems:    (360 362 372 374 441 456 525 526 527 528 529 530 534 535 537 538)
-  rtest_trace.mac problems:    (87 88)
-  rtest_to_poly_solve.mac problems:  (166 216)
-Tests that were expected to fail but passed:
-  rtest1.mac problems:   (183 186)
-  rtest_limit_extra.mac problem:  (259)
-  rtest_fourier_elim.mac problem:  (149)
-  rtest_romberg.mac problem:  (18)
-  rtest_to_poly_solve.mac problem:  (322)
-  rtest_raddenest.mac problem: (123)
-26 tests failed out of 19,154 total tests.
-
-All test in rtest_great pass: timings:
-
-┌                                                                         ┐
-│ function          time/call            calls        runtime      gctime │
-│                                                                         │
-│  ordfna   2.402409067168569e-6 sec   119730078  287.640625 sec     0    │
-│                                                                         │
-│ ordlist   5.563747453519275e-6 sec   52168076     290.25 sec       0    │
-│                                                                         │
-│ ordmexpt  2.6806849360904043e-6 sec  91930796    246.4375 sec      0    │
-│                                                                         │
-│  great    3.653463862676877e-6 sec   343231635  1253.984375 sec    0    │
-│                                                                         │
-│  total    3.423566858652172e-6 sec   607060585   2078.3125 sec     0    │
-└                                                                         ┘
-Standard Maxima--eight tests fail and
-
-┌                                                                         ┐
-│ function          time/call            calls        runtime      gctime │
-│                                                                         │
-│  ordfna   2.5787938050951397e-6 sec  186612196  481.234375 sec     0    │
-│                                                                         │
-│ ordlist   7.876779570425417e-6 sec   69133187   544.546875 sec     0    │
-│                                                                         │
-│ ordmexpt   8.37130756601478e-6 sec   68401426   572.609375 sec     0    │
-│                                                                         │
-│  great    4.813865653797971e-6 sec   470967002  2267.171875 sec    0    │
-│                                                                         │
-│  total    4.861646781280724e-6 sec   795113811   3865.5625 sec     0    │
-└                                                                         ┘
-
-Possibly, my ordlist function is a bit faster than the standard, and plus it is called about
-17 million fewer times.
 |#
-($load "approx-alike.lisp")
+;($load "approx-alike.lisp")
 
 ;; This function is no longer used.
 (defun my-constantp (e &optional (constants *builtin-numeric-constants*))
